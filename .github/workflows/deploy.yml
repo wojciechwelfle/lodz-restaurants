@@ -22,11 +22,9 @@ jobs:
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
 
-      - name: Change directory
-        run: cd ./frontend/lodz-restaurants-frontend
-
       - name: Build project
         run: npm run build
+        working-directory: ./frontend/lodz-restaurants-frontend
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v2
