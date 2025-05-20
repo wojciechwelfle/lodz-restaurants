@@ -3,7 +3,6 @@ package com.lodzrestaurants.lodzrestaurants.configuration;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.*;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.DishRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.MenuRepository;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantCategoryRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -31,6 +30,8 @@ public class DataInitializer {
 
             menuRepository.save(new Menu("Menu 1", "Menu description"));
             menuRepository.save(new Menu("Menu 2", "Menu description"));
+
+            restaurantRepository.save(new Restaurant("Restaurant 4", "Description 4", new Localization(51.7595, 19.4563), new RestaurantCategory("Sushi3"), new Ranking(4.5), new Menu("Menu 3", "Menu description")));
 
             dishRepository.save(new Dish("Dish 1", "Dish description", 10.0, menuRepository.findById(1L).orElse(null)));
             dishRepository.save(new Dish("Dish 2", "Dish description", 20.0, menuRepository.findById(1L).orElse(null)));

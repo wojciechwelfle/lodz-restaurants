@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Button, Link, Box } from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import type IRestaurant from "../types/IRestaurant";
 
@@ -50,14 +50,6 @@ const RestaurantDetails: React.FC<{ restaurant: IRestaurant; onClose: () => void
                         {restaurant.position[0]}, {restaurant.position[1]}
                     </Typography>
                 </Box>
-
-                {restaurant.website && (
-                    <Link href={restaurant.website} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outlined" sx={{ marginTop: "15px", alignSelf: "flex-start" }}>
-                            Odwiedź stronę
-                        </Button>
-                    </Link>
-                )}
 
                 <Button
                     variant="contained"

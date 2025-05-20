@@ -1,11 +1,13 @@
 package com.lodzrestaurants.lodzrestaurants.service;
 
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class RestaurantService {
@@ -20,13 +22,19 @@ public class RestaurantService {
     public List<RestaurantDto> getRestaurants() {
         return restaurantRepository.findAll()
                 .stream()
-                .map(restaurant -> new RestaurantDto(
-                        restaurant.getId(),
-                        restaurant.getName(),
-                        restaurant.getDescription(),
-                        new double[]{restaurant.getLocalization().getLatitude(), restaurant.getLocalization().getLongitude()}
-                ))
+                .map(mapRestaurantToDto())
                 .toList();
+    }
+
+    private static Function<Restaurant, RestaurantDto> mapRestaurantToDto() {
+        return restaurant -> new RestaurantDto(
+                restaurant.getId(),
+                restaurant.getName(),
+                restaurant.getDescription(),
+                new double[]{restaurant.getLocalization().getLatitude(), restaurant.getLocalization().getLongitude()},
+                restaurant.getRestaurantCategory().getCategoryName(),
+                restaurant.getMenu() != null ? restaurant.getMenu().getMenuId() : null
+        );
     }
 
 }

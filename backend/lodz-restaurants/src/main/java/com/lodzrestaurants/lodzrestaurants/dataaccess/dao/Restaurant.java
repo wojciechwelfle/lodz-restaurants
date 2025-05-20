@@ -52,4 +52,13 @@ public class Restaurant {
         this.restaurantCategory = restaurantCategory;
         this.ranking = ranking;
     }
+
+    public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory, Ranking ranking, Menu menu) {
+        this.name = name;
+        this.description = description;
+        this.localization = localization;
+        this.restaurantCategory = restaurantCategory;
+        this.ranking = ranking;
+        this.menu = menu;
+    }
 }
