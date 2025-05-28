@@ -1,12 +1,11 @@
 import React, {useState, useMemo, useEffect} from "react";
-import Map from "./Map";
-import Navbar from "./Navbar";
-import restaurantsData from "../data/restaurants";
-import type IRestaurant from "../types/IRestaurant";
-import RestaurantSearch from "./RestaurantSearch";
-import RestaurantList from "./RestaurantList";
-import {useDebounce} from "../hooks/useDebounce";
-import RestaurantDetails from "./RestaurantsDetails.tsx";
+import Map from "../components/Map.tsx";
+import restaurantsData from "../data/restaurants.ts";
+import type IRestaurant from "../types/IRestaurant.ts";
+import RestaurantSearch from "../components/RestaurantSearch.tsx";
+import RestaurantList from "../components/RestaurantList.tsx";
+import {useDebounce} from "../hooks/useDebounce.ts";
+import RestaurantDetails from "../components/RestaurantsDetails.tsx";
 import {API_URL, ONLINE_MODE} from "../constants.ts";
 
 const AppPage: React.FC = () => {
@@ -49,8 +48,6 @@ const AppPage: React.FC = () => {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            <Navbar/>
-
             <div className="flex flex-col md:flex-row flex-1">
                 <div
                     className="w-full md:w-1/3 p-4 overflow-y-auto bg-gradient-to-r from-purple-100 to-blue-50 shadow-lg">
