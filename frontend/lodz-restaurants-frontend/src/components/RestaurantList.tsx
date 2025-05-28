@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, CardContent, Typography, Button, CardActions } from "@mui/material";
+import {useNavigate} from "react-router-dom";
+import {Card, CardContent, Typography, Button, CardActions, Box} from "@mui/material";
 import type IRestaurant from "../types/IRestaurant";
 
 interface RestaurantListProps {
@@ -7,12 +8,18 @@ interface RestaurantListProps {
     onSelectRestaurant: (restaurant: IRestaurant) => void;
 }
 
-const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants, onSelectRestaurant }) => {
+const RestaurantList: React.FC<RestaurantListProps> = ({restaurants, onSelectRestaurant}) => {
+    const navigate = useNavigate();
+
+    const switchPageToMenu = (restaurant: IRestaurant) => {
+        navigate(`/menu/${restaurant.menuId}`);
+    }
+
     return (
         <div>
-            {restaurants.map((r) => (
+            {restaurants.map((restaurant) => (
                 <Card
-                    key={r.id}
+                    key={restaurant.id}
                     sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -24,28 +31,22 @@ const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants, onSelectRe
                     }}
                 >
                     <CardContent>
-                        <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
-                            {r.name}
+                        <Typography variant="h6" component="div" sx={{fontWeight: "bold"}}>
+                            {restaurant.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {r.description}
+                            {restaurant.description}
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small" onClick={() => onSelectRestaurant(r)} color="primary">
-                            Wybierz
-                        </Button>
-                        {r.website && (
-                            <Button
-                                size="small"
-                                href={r.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                color="secondary"
-                            >
-                                Strona
+                        <Box sx={{display: "flex", justifyContent: "space-between", width: "100%"}}>
+                            <Button size="small" onClick={() => onSelectRestaurant(restaurant)} color="primary">
+                                Wybierz
                             </Button>
-                        )}
+                            <Button size="small" onClick={() => switchPageToMenu(restaurant)} disabled={restaurant.menuId === null} color="primary">
+                                Menu
+                            </Button>
+                        </Box>
                     </CardActions>
                 </Card>
             ))}
