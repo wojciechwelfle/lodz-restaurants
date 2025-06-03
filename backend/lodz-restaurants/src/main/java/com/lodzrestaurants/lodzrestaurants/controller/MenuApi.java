@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/menu")
 public class MenuApi {
@@ -20,9 +22,19 @@ public class MenuApi {
         this.menuService = menuService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<MenuDto>> getAllMenus() {
+        return ResponseEntity.ok(menuService.getAllMenus());
+    }
+
     @GetMapping("/{menuId}")
     public ResponseEntity<MenuDto> getMenu(@PathVariable Long menuId) {
         return ResponseEntity.ok(menuService.getMenu(menuId));
+    }
+
+    @GetMapping("/admin/test")
+    public ResponseEntity<String> adminEndpoint() {
+        return ResponseEntity.ok("Admin access granted");
     }
 
 }

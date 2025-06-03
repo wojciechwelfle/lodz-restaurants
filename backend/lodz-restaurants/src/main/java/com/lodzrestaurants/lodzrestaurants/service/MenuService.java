@@ -1,6 +1,7 @@
 package com.lodzrestaurants.lodzrestaurants.service;
 
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Menu;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.DishDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.MenuDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.DishRepository;
@@ -35,31 +36,40 @@ public class MenuService {
                 .orElseThrow(() -> new NotFoundException("Menu not found"));
     }
 
+    public List<MenuDto> getAllMenus() {
+        return menuRepository.findAll()
+                .stream()
+                .map(mapMenuToDto())
+                .toList();
+    }
+
     private Function<Menu, MenuDto> mapMenuToDto() {
         return menu -> new MenuDto(
                 menu.getMenuId(),
-                getRestaurantNameOrThrowExceptionIfNotFound(menu.getMenuId()),
+                getRestaurantNameOrNullIfNotFound(menu.getMenuId()),
                 menu.getMenuName(),
                 menu.getMenuDescription(),
                 getDishListAndMapToDto(menu.getMenuId())
         );
     }
 
-    private String getRestaurantNameOrThrowExceptionIfNotFound(Long menuId) {
+    private String getRestaurantNameOrNullIfNotFound(Long menuId) {
         return restaurantRepository.findByMenuId(menuId)
-                .orElseThrow(() -> new NotFoundException("Restaurant not found for menu ID: " + menuId))
-                .getName();
+                .map(Restaurant::getName)
+                .orElse(null);
     }
 
     private List<DishDto> getDishListAndMapToDto(Long menuId) {
         return dishRepository.findAllByMenuId(menuId)
                 .stream()
                 .map(dish -> new DishDto(
+                        dish.getDishId(),
                         dish.getName(),
                         dish.getDescription(),
                         dish.getPrice()
                 ))
                 .toList();
     }
+
 
 }

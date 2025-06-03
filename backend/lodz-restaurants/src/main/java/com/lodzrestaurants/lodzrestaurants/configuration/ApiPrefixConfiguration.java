@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 @Configuration
-public class ApiPrefixConfig implements WebMvcConfigurer {
+public class ApiPrefixConfiguration implements WebMvcConfigurer {
 
     private static final String API_PREFIX = "/api";
 

@@ -3,6 +3,7 @@ package com.lodzrestaurants.lodzrestaurants.service;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
+import com.lodzrestaurants.lodzrestaurants.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,13 @@ public class RestaurantService {
                 .stream()
                 .map(mapRestaurantToDto())
                 .toList();
+    }
+
+    public void deleteRestaurant(Long restaurantId) {
+        if (!restaurantRepository.existsById(restaurantId)) {
+            throw new NotFoundException("Restaurant with ID " + restaurantId + " does not exist.");
+        }
+        restaurantRepository.deleteById(restaurantId);
     }
 
     private static Function<Restaurant, RestaurantDto> mapRestaurantToDto() {
