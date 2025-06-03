@@ -3,6 +3,7 @@ package com.lodzrestaurants.lodzrestaurants.controller;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.LoginResponse;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.UserDto;
 import com.lodzrestaurants.lodzrestaurants.service.AuthorizationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/authorization")
+@Tag(name = "Authorization API", description = "API for user authorization")
 public class AuthorizationApi {
 
     private final AuthorizationService authorizationService;

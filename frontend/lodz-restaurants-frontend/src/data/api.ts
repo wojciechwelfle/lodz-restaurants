@@ -30,6 +30,6 @@ export async function getAllMenus() {
 }
 
 export async function deleteDish(dishId: number): Promise<void> {
-    const res = await fetch(`/api/dishes/${dishId}`, { method: "DELETE" });
+    const res = await fetch(`${API_URL}/v1/dishes/${dishId}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Błąd usuwania dania");
 }

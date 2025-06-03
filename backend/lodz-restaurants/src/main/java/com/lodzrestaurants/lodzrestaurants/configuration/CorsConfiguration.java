@@ -15,7 +15,7 @@ public class CorsConfiguration {
              @Override
              public void addCorsMappings(@NonNull CorsRegistry registry) {
                  registry.addMapping("/**")
-                         .allowedOrigins("http://localhost:5173", "https://wojciechwelfle.github.io")
+                         .allowedOrigins("http://localhost:5173", "https://wojciechwelfle.github.io", "https://safeframe.googlesyndication.com")
                          .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                          .allowedHeaders("*")
                          .allowCredentials(true);

@@ -22,7 +22,7 @@ public class Restaurant {
     @JoinColumn(name = "localization_id", nullable = false)
     private Localization localization;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "restaurant_category_id", nullable = false)
     private RestaurantCategory restaurantCategory;
 

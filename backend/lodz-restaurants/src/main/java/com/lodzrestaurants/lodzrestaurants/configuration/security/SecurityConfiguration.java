@@ -29,6 +29,7 @@ public class SecurityConfiguration {
             new EndpointAccess(HttpMethod.GET, "/api/v1/menu"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/menu/*"),
             new EndpointAccess(HttpMethod.GET, "/v3/api-docs/**"),
+            new EndpointAccess(HttpMethod.GET, "/api/api-docs/**"),
             new EndpointAccess(HttpMethod.GET, "/swagger-ui/**")
     );
 

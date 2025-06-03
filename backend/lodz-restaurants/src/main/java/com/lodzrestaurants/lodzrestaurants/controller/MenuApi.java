@@ -2,6 +2,7 @@ package com.lodzrestaurants.lodzrestaurants.controller;
 
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.MenuDto;
 import com.lodzrestaurants.lodzrestaurants.service.MenuService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/menu")
+@Tag(name = "Menu API", description = "API for managing menus")
 public class MenuApi {
 
     private final MenuService menuService;
