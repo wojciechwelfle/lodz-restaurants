@@ -50,13 +50,13 @@ public class DataInitializer {
         Restaurant restaurant = new Restaurant(
                 "Susharnia",
                 "A sushi restaurant offering various lunch options.",
-                new Localization(51.780408391183364, 19.450547992106593),
+                new Localization(51.77720949875417, 19.45797264481472),
                 new RestaurantCategory("Sushi")
         );
 
         restaurantRepository.save(restaurant);
 
-        Menu menu = new Menu("Lunch Menu", "Various lunch options for sushi lovers.");
+        Menu menu = new Menu("Susharnia Menu", "Various lunch options for sushi lovers.");
         menuRepository.save(menu);
 
         restaurant.setMenu(menu);

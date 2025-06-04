@@ -37,7 +37,7 @@ const FlyTo = ({ position }: { position: [number, number] }) => {
 };
 
 const Map: React.FC<MapProps> = ({ restaurants, selected }) => {
-    const defaultCenter: [number, number] = [52.2297, 21.0122];
+    const defaultCenter: [number, number] = [51.77720949875417, 19.45797264481472];
 
     const [mapKey, setMapKey] = useState(0);
 

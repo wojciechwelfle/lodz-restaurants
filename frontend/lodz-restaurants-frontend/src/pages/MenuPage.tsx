@@ -69,7 +69,7 @@ const MenuPage: React.FC = () => {
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
             <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
-                Menu Restauracji
+                {menu.menuName ? menu.menuName : "Menu Restauracji"}
             </Typography>
 
             <Stack spacing={2}>

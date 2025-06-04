@@ -33,3 +33,14 @@ export async function deleteDish(dishId: number): Promise<void> {
     const res = await fetch(`${API_URL}/v1/dishes/${dishId}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Błąd usuwania dania");
 }
+
+export async function login(username: string, password: string): Promise<string> {
+    const res = await fetch(`${API_URL}/v1/authorization/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) throw new Error("Login failed");
+    const data = await res.json();
+    return data.token;
+}
