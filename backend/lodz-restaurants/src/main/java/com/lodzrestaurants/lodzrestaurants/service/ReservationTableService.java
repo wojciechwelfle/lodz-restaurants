@@ -46,8 +46,12 @@ public class ReservationTableService {
                 .orElseThrow(() -> new BadRequest("Restaurant not found with ID: " + request.restaurantId()));
 
         List<ReservationTable> tables = new ArrayList<>();
+
+        long tableNumber = reservationTableRepository.findMaxTableNumberByRestaurantId(request.restaurantId()) != null
+                ? reservationTableRepository.findMaxTableNumberByRestaurantId(request.restaurantId()) + 1
+                : 1;
         for (int i = 0; i < request.numberOfTables(); i++) {
-            generateTablesForEachHour(request, restaurant, tables);
+            generateTablesForEachHour(request, restaurant, tables, tableNumber);
         }
         if (tables.isEmpty()) {
             throw new BadRequest("No tables generated. Please check the input parameters.");
@@ -58,19 +62,21 @@ public class ReservationTableService {
         return "Reservation tables generated successfully for restaurant ID: " + request.restaurantId();
     }
 
-    private static void generateTablesForEachHour(GenerateTablesRequest request, Restaurant restaurant, List<ReservationTable> tables) {
+    private void generateTablesForEachHour(GenerateTablesRequest request, Restaurant restaurant, List<ReservationTable> tables, long tableNumber) {
         for (long hour = request.fromHour(); hour < request.toHour(); hour++) {
-            ReservationTable table = createReservationTable(request, restaurant, hour);
+            ReservationTable table = createReservationTable(request, restaurant, hour, tableNumber++);
             tables.add(table);
         }
     }
 
-    private static ReservationTable createReservationTable(GenerateTablesRequest request, Restaurant restaurant, long hour) {
+    private static ReservationTable createReservationTable(GenerateTablesRequest request, Restaurant restaurant, long hour, long tableNumber) {
         ReservationTable table = new ReservationTable();
         table.setRestaurant(restaurant);
         table.setSeats(request.seats());
         table.setDate(request.date());
         table.setHour(hour);
+        table.setAvailable(true);
+        table.setTableNumber((int) tableNumber);
         return table;
     }
 
