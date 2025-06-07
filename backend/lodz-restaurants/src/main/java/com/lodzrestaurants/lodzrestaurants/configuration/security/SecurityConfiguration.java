@@ -23,11 +23,12 @@ public class SecurityConfiguration {
     }
 
     private static final List<EndpointAccess> WHITELIST = List.of(
-            new EndpointAccess(HttpMethod.DELETE, "**"),
             new EndpointAccess(HttpMethod.POST, "/api/v1/authorization/login"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/menu"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/menu/*"),
+            new EndpointAccess(HttpMethod.GET, "/api/v1/reservation-tables/*"),
+            new EndpointAccess(HttpMethod.POST, "/api/v1/reservation-tables/generate"),
             new EndpointAccess(HttpMethod.GET, "/v3/api-docs/**"),
             new EndpointAccess(HttpMethod.GET, "/api/api-docs/**"),
             new EndpointAccess(HttpMethod.GET, "/swagger-ui/**")
@@ -45,12 +46,8 @@ public class SecurityConfiguration {
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-                        })
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied"))
+                        .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

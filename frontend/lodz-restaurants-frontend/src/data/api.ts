@@ -6,9 +6,12 @@ export async function getRestaurants() {
     return res.json();
 }
 
-export async function deleteRestaurant(id: number) {
+export async function deleteRestaurant(id: number, token: string): Promise<void> {
     const res = await fetch(`${API_URL}/v1/restaurants/${id}`, {
         method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        }
     });
     if (!res.ok) throw new Error("Błąd usuwania restauracji");
 }
@@ -29,16 +32,22 @@ export async function getAllMenus() {
     return res.json();
 }
 
-export async function deleteDish(dishId: number): Promise<void> {
-    const res = await fetch(`${API_URL}/v1/dishes/${dishId}`, { method: "DELETE" });
+export async function deleteDish(dishId: number, token: string): Promise<void> {
+    const res = await fetch(`${API_URL}/v1/dishes/${dishId}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            }
+        });
     if (!res.ok) throw new Error("Błąd usuwania dania");
 }
 
 export async function login(username: string, password: string): Promise<string> {
     const res = await fetch(`${API_URL}/v1/authorization/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password}),
     });
     if (!res.ok) throw new Error("Login failed");
     const data = await res.json();

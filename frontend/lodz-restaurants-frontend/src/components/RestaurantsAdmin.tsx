@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import {deleteRestaurant, getRestaurants} from "../data/api";
 import type IRestaurant from "../types/IRestaurant.ts";
 
-export default function RestaurantsAdmin() {
+export default function RestaurantsAdmin({token} : { token: string }) {
     const [restaurants, setRestaurants] = useState([] as IRestaurant[]);
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export default function RestaurantsAdmin() {
 
     const handleDelete = async (id: number) => {
         try {
-            await deleteRestaurant(id);
+            await deleteRestaurant(id, token);
             setRestaurants((prev) => prev.filter((r) => r.id !== id));
         } catch (err) {
             console.error("Błąd usuwania restauracji:", err);

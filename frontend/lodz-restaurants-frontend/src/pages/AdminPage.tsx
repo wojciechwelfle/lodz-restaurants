@@ -8,7 +8,7 @@ export default function AdminPage() {
     return (
         <>
             {!token && (<AdminLogin onLogin={(token) => setToken(token)}/>)}
-            {token && (<AdminView />)}
+            {token && (<AdminView token={token} />)}
         </>
     );
 }

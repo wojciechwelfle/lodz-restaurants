@@ -16,7 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { deleteDish, getAllMenus } from "../data/api";
 import type IMenu from "../types/IMenu";
 
-export default function DishesAdmin() {
+export default function DishesAdmin({token}: { token: string }) {
     const [menus, setMenus] = useState<IMenu[]>([]);
 
     useEffect(() => {
@@ -25,7 +25,7 @@ export default function DishesAdmin() {
 
     const handleDelete = async (menuId: number, dishId: number) => {
         try {
-            await deleteDish(dishId);
+            await deleteDish(dishId, token);
             setMenus((prevMenus) =>
                 prevMenus.map((menu) =>
                     menu.menuId === menuId
