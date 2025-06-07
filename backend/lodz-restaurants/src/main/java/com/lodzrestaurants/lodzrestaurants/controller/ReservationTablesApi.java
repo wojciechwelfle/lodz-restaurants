@@ -31,7 +31,7 @@ public class ReservationTablesApi {
     }
 
     @Schema(description = "Create a new reservation table for a restaurant")
-    @PutMapping
+    @PostMapping
     public ResponseEntity<String> bookTable(
             @RequestBody ReservationRequest reservationRequest) {
         return ResponseEntity.ok(reservationTableService.bookTable(reservationRequest));

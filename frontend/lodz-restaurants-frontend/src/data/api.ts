@@ -1,5 +1,6 @@
 import {API_URL} from "../constants.ts";
 import type IReservationTable from "../types/IReservationTable.ts";
+import type IReservationRequest from "../types/IReservationRequest.ts";
 
 export async function getRestaurants() {
     const res = await fetch(`${API_URL}/v1/restaurants`);
@@ -61,6 +62,17 @@ export async function getAllReservationTables(restaurantId: number): Promise<IRe
     return res.json();
 }
 
+export async function makeReservation(reservationData: IReservationRequest): Promise<void> {
+    const res = await fetch(`${API_URL}/v1/reservation-tables`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reservationData),
+    });
+    if (!res.ok) throw new Error("Błąd podczas rezerwacji stolika");
+}
+
 export async function generateReservationTables(
     restaurantId: number,
     numberOfTables: number,
@@ -87,4 +99,3 @@ export async function generateReservationTables(
     });
     if (!res.ok) throw new Error("Błąd generowania stolików rezerwacji");
 }
-
