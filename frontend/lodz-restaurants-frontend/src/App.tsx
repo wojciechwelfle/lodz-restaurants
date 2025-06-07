@@ -14,7 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<AppPage />} />
                 <Route path="/menu/:id" element={<MenuPage />} />
-                <Route path="/reservation-tables/:id" element={<ReservationTablesPage />} />
+                <Route path="/reservation/:id" element={<ReservationTablesPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
