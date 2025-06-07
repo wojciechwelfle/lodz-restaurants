@@ -1,10 +1,13 @@
 package com.lodzrestaurants.lodzrestaurants.controller;
 
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantCategoryDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantDto;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantRequest;
 import com.lodzrestaurants.lodzrestaurants.service.RestaurantService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,30 @@ public class RestaurantsApi {
     @GetMapping
     public ResponseEntity<List<RestaurantDto>> getRestaurants() {
         return ResponseEntity.ok(restaurantService.getRestaurants());
+    }
+
+    @Schema(name = "Get Restaurant", description = "Get a restaurant by ID")
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantDto> getRestaurant(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.getRestaurant(restaurantId));
+    }
+
+    @Schema(name = "Get Categories", description = "Get a list of restaurant categories")
+    @GetMapping("/categories")
+    public ResponseEntity<List<RestaurantCategoryDto>> getCategories() {
+        return ResponseEntity.ok(restaurantService.getCategories());
+    }
+
+    @Schema(name = "Create Restaurant", description = "Create a new restaurant")
+    @PostMapping
+    public ResponseEntity<RestaurantDto> createRestaurant(@RequestBody RestaurantRequest restaurantDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.createRestaurant(restaurantDto));
+    }
+
+    @Schema(name = "Update Restaurant", description = "Update a restaurant by ID")
+    @PutMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable Long restaurantId, @RequestBody RestaurantRequest restaurantDto) {
+        return ResponseEntity.ok(restaurantService.updateRestaurant(restaurantId, restaurantDto));
     }
 
     @Schema(name = "Delete Restaurant", description = "Delete a restaurant by ID")

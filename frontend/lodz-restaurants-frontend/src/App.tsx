@@ -11,6 +11,7 @@ function App() {
     <>
         <BrowserRouter basename={"/lodz-restaurants"}>
             <Navbar/>
+            <div className="overflow-y-auto bg-gradient-to-r from-blue-100 to-blue-50 shadow-lg min-h-screen">
             <Routes>
                 <Route path="/" element={<AppPage />} />
                 <Route path="/menu/:id" element={<MenuPage />} />
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            </div>
         </BrowserRouter>
     </>
   )

@@ -140,7 +140,7 @@ const ReservationTablesPage: React.FC = () => {
         <Container>
             <br/>
             <Typography variant="h4" gutterBottom>
-                Reservation Tables
+                Rezerwacje Stolików
             </Typography>
             <FormControlLabel
                 control={
@@ -149,13 +149,13 @@ const ReservationTablesPage: React.FC = () => {
                         onChange={(e) => setShowAvailableOnly(e.target.checked)}
                     />
                 }
-                label="Show Available Tables Only"
+                label="Pokaż tylko dostępne stoliki"
             />
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Stolik</TableCell>
+                        <TableCell>Rezerwacja</TableCell>
+                        <TableCell>Nr Stolika</TableCell>
                         <TableCell>Data</TableCell>
                         <TableCell>Siedzenia</TableCell>
                         <TableCell>Status</TableCell>

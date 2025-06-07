@@ -17,7 +17,7 @@ public class Menu {
     @Column(name = "menu_id", nullable = false)
     private Long menuId;
 
-    @Column(name = "menu_name", nullable = false)
+    @Column(name = "menu_name")
     private String menuName;
 
     @Column(name = "menu_description")

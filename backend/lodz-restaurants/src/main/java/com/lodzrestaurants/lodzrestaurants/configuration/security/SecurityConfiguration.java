@@ -25,6 +25,8 @@ public class SecurityConfiguration {
     private static final List<EndpointAccess> WHITELIST = List.of(
             new EndpointAccess(HttpMethod.POST, "/api/v1/authorization/login"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants"),
+            new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants/*"),
+            new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants/categories"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/menu"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/menu/*"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/reservation-tables/*"),

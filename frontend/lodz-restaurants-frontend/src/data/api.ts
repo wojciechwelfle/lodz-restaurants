@@ -1,10 +1,36 @@
 import {API_URL} from "../constants.ts";
 import type IReservationTable from "../types/IReservationTable.ts";
 import type IReservationRequest from "../types/IReservationRequest.ts";
+import type IRestaurantRequest from "../types/IRestaurantRequest.ts";
 
 export async function getRestaurants() {
     const res = await fetch(`${API_URL}/v1/restaurants`);
     if (!res.ok) throw new Error("Błąd podczas pobierania restauracji");
+    return res.json();
+}
+
+export async function getRestaurantById(id: number) {
+    const res = await fetch(`${API_URL}/v1/restaurants/${id}`);
+    if (!res.ok) throw new Error("Błąd podczas pobierania restauracji");
+    return res.json();
+}
+
+export async function getAllCategories() {
+    const res = await fetch(`${API_URL}/v1/restaurants/categories`);
+    if (!res.ok) throw new Error("Błąd pobierania kategorii");
+    return res.json();
+}
+
+export async function updateRestaurant(restaurant: any, token: string) {
+    const res = await fetch(`${API_URL}/v1/restaurants/${restaurant.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(restaurant),
+    });
+    if (!res.ok) throw new Error("Błąd aktualizacji restauracji");
     return res.json();
 }
 
@@ -18,15 +44,25 @@ export async function deleteRestaurant(id: number, token: string): Promise<void>
     if (!res.ok) throw new Error("Błąd usuwania restauracji");
 }
 
-// export async function createRestaurant(data: any) {
-//     const res = await fetch(`${API_URL}/v1/restaurants`, {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(data),
-//     });
-//     if (!res.ok) throw new Error("Błąd tworzenia restauracji");
-//     return res.json();
-// }
+export async function createRestaurant(data: IRestaurantRequest, token: string) {
+    const requestBody = {
+        name: data.name,
+        description: data.description,
+        position: data.position,
+        category: data.category
+    };
+    
+    const res = await fetch(`${API_URL}/v1/restaurants`, {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestBody),
+    });
+    if (!res.ok) throw new Error("Błąd tworzenia restauracji");
+    return res.json();
+}
 
 export async function getAllMenus() {
     const res = await fetch(`${API_URL}/v1/menu`);
@@ -99,3 +135,4 @@ export async function generateReservationTables(
     });
     if (!res.ok) throw new Error("Błąd generowania stolików rezerwacji");
 }
+

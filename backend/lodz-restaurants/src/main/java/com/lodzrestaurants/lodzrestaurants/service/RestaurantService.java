@@ -1,7 +1,13 @@
 package com.lodzrestaurants.lodzrestaurants.service;
 
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Localization;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Menu;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.RestaurantCategory;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantCategoryDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantDto;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantCategoryRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
 import com.lodzrestaurants.lodzrestaurants.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +20,18 @@ import java.util.function.Function;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantCategoryRepository restaurantCategoryRepository;
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository, RestaurantCategoryRepository restaurantCategoryRepository) {
         this.restaurantRepository = restaurantRepository;
+        this.restaurantCategoryRepository = restaurantCategoryRepository;
+    }
+
+    public RestaurantDto getRestaurant(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .map(mapRestaurantToDto())
+                .orElseThrow(() -> new NotFoundException("Restaurant with ID " + restaurantId + " does not exist."));
     }
 
     public List<RestaurantDto> getRestaurants() {
@@ -25,6 +39,49 @@ public class RestaurantService {
                 .stream()
                 .map(mapRestaurantToDto())
                 .toList();
+    }
+
+    public List<RestaurantCategoryDto> getCategories() {
+        return restaurantCategoryRepository.findAll()
+                .stream()
+                .map(category -> new RestaurantCategoryDto(
+                        category.getRestaurantCategoryId(),
+                        category.getCategoryName()
+                ))
+                .toList();
+    }
+
+    public RestaurantDto createRestaurant(RestaurantRequest restaurantRequest) {
+        RestaurantCategory category = restaurantCategoryRepository.findByCategoryName(restaurantRequest.category())
+                .orElseThrow(() -> new NotFoundException("Category " + restaurantRequest.category() + " does not exist."));
+
+        Localization localization = new Localization(restaurantRequest.position()[0], restaurantRequest.position()[1]);
+        Restaurant restaurant = new Restaurant(
+                restaurantRequest.name(),
+                restaurantRequest.description(),
+                localization,
+                category,
+                new Menu("Menu for " + restaurantRequest.name() + " Restaurant", "")
+        );
+
+        return mapRestaurantToDto().apply(restaurantRepository.save(restaurant));
+    }
+
+    public RestaurantDto updateRestaurant(Long restaurantId, RestaurantRequest restaurantRequest) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException("Restaurant with ID " + restaurantId + " does not exist."));
+
+        RestaurantCategory category = restaurantCategoryRepository.findByCategoryName(restaurantRequest.category())
+                .orElseThrow(() -> new NotFoundException("Category " + restaurantRequest.category() + " does not exist."));
+
+        Localization localization = new Localization(restaurantRequest.position()[0], restaurantRequest.position()[1]);
+
+        restaurant.setName(restaurantRequest.name());
+        restaurant.setDescription(restaurantRequest.description());
+        restaurant.setLocalization(localization);
+        restaurant.setRestaurantCategory(category);
+
+        return mapRestaurantToDto().apply(restaurantRepository.save(restaurant));
     }
 
     public void deleteRestaurant(Long restaurantId) {
