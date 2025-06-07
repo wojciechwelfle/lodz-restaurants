@@ -45,7 +45,7 @@ const MenuPage: React.FC = () => {
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" mt={4}>
-                <CircularProgress />
+                <CircularProgress color="primary" size={50}/>
             </Box>
         );
     }
@@ -67,9 +67,10 @@ const MenuPage: React.FC = () => {
     }
 
     return (
-        <Container maxWidth="md" sx={{ py: 4 }}>
+        <Container maxWidth="md">
+            <br />
             <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
-                Menu Restauracji
+                {menu.menuName ? menu.menuName : "Menu Restauracji"}
             </Typography>
 
             <Stack spacing={2}>

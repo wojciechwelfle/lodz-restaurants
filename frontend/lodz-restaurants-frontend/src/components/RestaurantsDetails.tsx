@@ -2,6 +2,7 @@ import React from "react";
 import { Typography, Button, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import type IRestaurant from "../types/IRestaurant";
+import {useNavigate} from "react-router-dom";
 
 const ModalOverlay = styled("div")({
     position: "fixed",
@@ -31,6 +32,8 @@ const ModalContent = styled("div")({
 });
 
 const RestaurantDetails: React.FC<{ restaurant: IRestaurant; onClose: () => void }> = ({ restaurant, onClose }) => {
+    const navigate = useNavigate();
+
     return (
         <ModalOverlay>
             <ModalContent>
@@ -50,6 +53,19 @@ const RestaurantDetails: React.FC<{ restaurant: IRestaurant; onClose: () => void
                         {restaurant.position[0]}, {restaurant.position[1]}
                     </Typography>
                 </Box>
+
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate(`/reservation/${restaurant.id}`)}
+                    sx={{
+                        alignSelf: "flex-start",
+                        backgroundColor: "#1976d2",
+                        "&:hover": { backgroundColor: "#1565c0" },
+                    }}
+                >
+                    Przejdź do rezerwacji
+                </Button>
 
                 <Button
                     variant="contained"

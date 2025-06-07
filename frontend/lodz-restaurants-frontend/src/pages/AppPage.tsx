@@ -50,7 +50,7 @@ const AppPage: React.FC = () => {
         <div className="flex flex-col min-h-screen bg-gray-50">
             <div className="flex flex-col md:flex-row flex-1">
                 <div
-                    className="w-full md:w-1/3 p-4 overflow-y-auto bg-gradient-to-r from-purple-100 to-blue-50 shadow-lg">
+                    className="w-full md:w-1/3 p-4 overflow-y-auto bg-gradient-to-r from-blue-100 to-blue-50 shadow-lg">
                     <h2 className="text-lg font-semibold mb-3 text-gray-800">📍 Restauracje</h2>
 
                     <RestaurantSearch onSearch={handleSearch}/>

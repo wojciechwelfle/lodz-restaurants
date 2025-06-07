@@ -22,7 +22,7 @@ public class Restaurant {
     @JoinColumn(name = "localization_id", nullable = false)
     private Localization localization;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "restaurant_category_id", nullable = false)
     private RestaurantCategory restaurantCategory;
 
@@ -38,6 +38,14 @@ public class Restaurant {
     }
 
     public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory) {
+        this.name = name;
+        this.description = description;
+        this.localization = localization;
+        this.restaurantCategory = restaurantCategory;
+        this.ranking = null;
+    }
+
+    public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory, Menu menu) {
         this.name = name;
         this.description = description;
         this.localization = localization;

@@ -1,0 +1,45 @@
+package com.lodzrestaurants.lodzrestaurants.controller;
+
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationTableDto;
+import com.lodzrestaurants.lodzrestaurants.service.ReservationTableService;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/v1/reservation-tables")
+@Tag(name = "Reservation Tables API", description = "API for managing reservation tables")
+public class ReservationTablesApi {
+
+    private final ReservationTableService reservationTableService;
+
+    @Autowired
+    public ReservationTablesApi(ReservationTableService reservationTableService) {
+        this.reservationTableService = reservationTableService;
+    }
+
+    @Schema(description = "Get all reservation tables for restaurant")
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<List<ReservationTableDto>> getAllReservationTables(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(reservationTableService.getAllReservationTables(restaurantId));
+    }
+
+    @Schema(description = "Create a new reservation table for a restaurant")
+    @PostMapping
+    public ResponseEntity<String> bookTable(
+            @RequestBody ReservationRequest reservationRequest) {
+        return ResponseEntity.ok(reservationTableService.bookTable(reservationRequest));
+    }
+
+    @Schema(description = "Generate reservation tables for a restaurant")
+    @PostMapping("/generate")
+    public ResponseEntity<String> generateTables(@RequestBody GenerateTablesRequest request) {
+        return ResponseEntity.ok(reservationTableService.generateTables(request));
+    }
+}
