@@ -29,6 +29,7 @@ export async function getAllCategories() {
     return res.json();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateRestaurant(restaurant: any, token: string) {
     const res = await fetch(`${API_URL}/v1/restaurants/${restaurant.id}`, {
         method: "PUT",
