@@ -6,9 +6,10 @@ import type IRestaurant from "../types/IRestaurant";
 interface RestaurantListProps {
     restaurants: IRestaurant[];
     onSelectRestaurant: (restaurant: IRestaurant) => void;
+    highlightedRestaurantId?: number | null;
 }
 
-const RestaurantList: React.FC<RestaurantListProps> = ({restaurants, onSelectRestaurant}) => {
+const RestaurantList: React.FC<RestaurantListProps> = ({restaurants, onSelectRestaurant, highlightedRestaurantId}) => {
     const navigate = useNavigate();
 
     const switchPageToMenu = (restaurant: IRestaurant) => {
@@ -24,10 +25,8 @@ const RestaurantList: React.FC<RestaurantListProps> = ({restaurants, onSelectRes
                         display: "flex",
                         flexDirection: "column",
                         marginBottom: 2,
-                        boxShadow: 3,
-                        ":hover": {
-                            boxShadow: 6,
-                        },
+                        boxShadow: restaurant.id === highlightedRestaurantId ? "0 0 10px 2px rgba(0, 123, 255, 0.8)" : 3,
+                        transition: "box-shadow 1.3s ease-in-out",
                     }}
                 >
                     <CardContent>
@@ -55,3 +54,4 @@ const RestaurantList: React.FC<RestaurantListProps> = ({restaurants, onSelectRes
 };
 
 export default RestaurantList;
+

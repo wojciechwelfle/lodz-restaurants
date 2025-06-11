@@ -1,29 +1,53 @@
-import React, { useState } from "react";
-import { TextField } from "@mui/material";
+import React from "react";
+import {TextField, Select, MenuItem, FormControl, InputLabel, Box} from "@mui/material";
 
 interface RestaurantSearchProps {
     onSearch: (query: string) => void;
+    categories: string[];
+    selectedCategory: string;
+    onCategoryChange: (category: string) => void;
 }
 
-const RestaurantSearch: React.FC<RestaurantSearchProps> = ({ onSearch }) => {
-    const [searchQuery, setSearchQuery] = useState<string>("");
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(event.target.value);
-        onSearch(event.target.value);
-    };
-
+const RestaurantSearch: React.FC<RestaurantSearchProps> = ({
+                                                               onSearch,
+                                                               categories,
+                                                               selectedCategory,
+                                                               onCategoryChange,
+                                                           }) => {
     return (
-        <div className="mb-4">
-            <TextField
-                label="Wyszukaj restaurację"
-                variant="outlined"
-                fullWidth
-                value={searchQuery}
-                onChange={handleSearchChange}
-                sx={{ marginBottom: 3 }}
-            />
-        </div>
+        <>
+            <Box display="flex" flexDirection="row" gap={2}>
+                <TextField
+                    label="Szukaj"
+                    variant="outlined"
+                    fullWidth
+                    onChange={(e) => onSearch(e.target.value)}
+                />
+                <FormControl variant="outlined" fullWidth>
+                    <InputLabel id="category-label">Kategoria</InputLabel>
+                    <Select
+                        labelId="category-label"
+                        id="category-select"
+                        value={selectedCategory}
+                        onChange={(e) => onCategoryChange(e.target.value)}
+                        label="Kategoria"
+                        fullWidth
+                    >
+                        <MenuItem value="">Wszystkie</MenuItem>
+                        {categories && categories.length > 0 ? (
+                            categories.map((category, index) => (
+                                <MenuItem key={`${category}-${index}`} value={category}>
+                                    {category}
+                                </MenuItem>
+                            ))
+                        ) : (
+                            <MenuItem disabled>No categories available</MenuItem>
+                        )}
+                    </Select>
+                </FormControl>
+            </Box>
+            <br/>
+        </>
     );
 };
 

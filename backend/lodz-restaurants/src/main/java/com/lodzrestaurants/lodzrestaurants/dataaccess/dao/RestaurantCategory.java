@@ -15,7 +15,7 @@ public class RestaurantCategory {
     @Column(name = "restaurant_category_id", nullable = false)
     private Long restaurantCategoryId;
 
-    @Column(name = "category_name", nullable = false)
+    @Column(name = "category_name", nullable = false, unique = true)
     private String categoryName;
 
     public RestaurantCategory() {
