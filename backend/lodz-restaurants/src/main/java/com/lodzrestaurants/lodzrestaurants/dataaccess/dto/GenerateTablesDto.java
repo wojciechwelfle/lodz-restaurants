@@ -1,6 +1,6 @@
 package com.lodzrestaurants.lodzrestaurants.dataaccess.dto;
 
-public record GenerateTablesRequest(
+public record GenerateTablesDto(
         Long restaurantId,
         Integer numberOfTables,
         Integer seats,

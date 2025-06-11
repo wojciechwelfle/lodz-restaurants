@@ -1,6 +1,6 @@
 package com.lodzrestaurants.lodzrestaurants.dataaccess.dto;
 
-public record LoginResponse (
+public record LoginDto(
         String username,
         String token
 ) {

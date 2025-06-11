@@ -35,7 +35,18 @@ const ReservationTablesPage: React.FC = () => {
     const loadReservationTables = () => {
         getAllReservationTables(Number(id)).then(
             (tables: IReservationTable[]) => {
-                setReservationTables(tables);
+                const sortedTables = tables.sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+
+                    if (dateA.getTime() === dateB.getTime()) {
+                        return a.hour - b.hour; // Sort by hour if dates are equal
+                    }
+
+                    return dateA.getTime() - dateB.getTime(); // Sort by date
+                });
+
+                setReservationTables(sortedTables);
             }
         ).catch((error) => {
                 console.error("Error fetching reservation tables:", error);

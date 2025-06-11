@@ -2,8 +2,8 @@ package com.lodzrestaurants.lodzrestaurants.service;
 
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.ReservationTable;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesRequest;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesDto;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequestDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationTableDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.ReservationTableRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
@@ -39,30 +39,30 @@ public class ReservationTableService {
     }
 
     @Transactional
-    public String bookTable(ReservationRequest reservationRequest) {
-        if (reservationRequest.reservationTableId() == null || reservationRequest.reservationTableId() <= 0) {
+    public String bookTable(ReservationRequestDto reservationRequestDto) {
+        if (reservationRequestDto.reservationTableId() == null || reservationRequestDto.reservationTableId() <= 0) {
             throw new BadRequest("Invalid reservation table ID.");
         }
-        ReservationTable reservationTable = reservationTableRepository.findById(reservationRequest.reservationTableId())
-                .orElseThrow(() -> new BadRequest("Reservation table not found with ID: " + reservationRequest.reservationTableId()));
+        ReservationTable reservationTable = reservationTableRepository.findById(reservationRequestDto.reservationTableId())
+                .orElseThrow(() -> new BadRequest("Reservation table not found with ID: " + reservationRequestDto.reservationTableId()));
 
         if (!reservationTable.isAvailable()) {
             throw new BadRequest("Reservation table is not available for booking.");
         }
 
-        reservationTable.setFirstName(reservationRequest.firstName());
-        reservationTable.setLastName(reservationRequest.lastName());
-        reservationTable.setPhoneNumber(reservationRequest.phoneNumber());
-        reservationTable.setEmail(reservationRequest.email());
+        reservationTable.setFirstName(reservationRequestDto.firstName());
+        reservationTable.setLastName(reservationRequestDto.lastName());
+        reservationTable.setPhoneNumber(reservationRequestDto.phoneNumber());
+        reservationTable.setEmail(reservationRequestDto.email());
         reservationTable.setAvailable(false);
 
         reservationTableRepository.save(reservationTable);
-        log.info("Reservation created for table ID: {}", reservationRequest.reservationTableId());
-        return "Reservation created successfully for table ID: " + reservationRequest.reservationTableId();
+        log.info("Reservation created for table ID: {}", reservationRequestDto.reservationTableId());
+        return "Reservation created successfully for table ID: " + reservationRequestDto.reservationTableId();
     }
 
     @Transactional
-    public String generateTables(GenerateTablesRequest request) {
+    public String generateTables(GenerateTablesDto request) {
         if (request.numberOfTables() <= 0 || request.seats() <= 0) {
             throw new BadRequest("Number of tables and seats must be greater than zero.");
         }
@@ -86,14 +86,14 @@ public class ReservationTableService {
         return "Reservation tables generated successfully for restaurant ID: " + request.restaurantId();
     }
 
-    private void generateTablesForEachHour(GenerateTablesRequest request, Restaurant restaurant, List<ReservationTable> tables, long tableNumber) {
+    private void generateTablesForEachHour(GenerateTablesDto request, Restaurant restaurant, List<ReservationTable> tables, long tableNumber) {
         for (long hour = request.fromHour(); hour < request.toHour(); hour++) {
             ReservationTable table = bookTable(request, restaurant, hour, tableNumber++);
             tables.add(table);
         }
     }
 
-    private static ReservationTable bookTable(GenerateTablesRequest request, Restaurant restaurant, long hour, long tableNumber) {
+    private static ReservationTable bookTable(GenerateTablesDto request, Restaurant restaurant, long hour, long tableNumber) {
         ReservationTable table = new ReservationTable();
         table.setRestaurant(restaurant);
         table.setSeats(request.seats());

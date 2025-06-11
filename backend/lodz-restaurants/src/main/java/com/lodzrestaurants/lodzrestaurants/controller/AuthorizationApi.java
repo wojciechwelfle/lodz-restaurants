@@ -1,6 +1,6 @@
 package com.lodzrestaurants.lodzrestaurants.controller;
 
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.LoginResponse;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.LoginDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.UserDto;
 import com.lodzrestaurants.lodzrestaurants.service.AuthorizationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +24,7 @@ public class AuthorizationApi {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody UserDto userDto) {
+    public ResponseEntity<LoginDto> login(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(authorizationService.login(userDto));
     }
 

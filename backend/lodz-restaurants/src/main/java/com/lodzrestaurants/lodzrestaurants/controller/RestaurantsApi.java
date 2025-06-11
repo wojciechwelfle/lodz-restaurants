@@ -2,7 +2,7 @@ package com.lodzrestaurants.lodzrestaurants.controller;
 
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantCategoryDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantDto;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantRequestDto;
 import com.lodzrestaurants.lodzrestaurants.service.RestaurantService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,13 +45,13 @@ public class RestaurantsApi {
 
     @Schema(name = "Create Restaurant", description = "Create a new restaurant")
     @PostMapping
-    public ResponseEntity<RestaurantDto> createRestaurant(@RequestBody RestaurantRequest restaurantDto) {
+    public ResponseEntity<RestaurantDto> createRestaurant(@RequestBody RestaurantRequestDto restaurantDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.createRestaurant(restaurantDto));
     }
 
     @Schema(name = "Update Restaurant", description = "Update a restaurant by ID")
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable Long restaurantId, @RequestBody RestaurantRequest restaurantDto) {
+    public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable Long restaurantId, @RequestBody RestaurantRequestDto restaurantDto) {
         return ResponseEntity.ok(restaurantService.updateRestaurant(restaurantId, restaurantDto));
     }
 

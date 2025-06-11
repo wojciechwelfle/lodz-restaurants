@@ -2,7 +2,7 @@ package com.lodzrestaurants.lodzrestaurants.service;
 
 import com.lodzrestaurants.lodzrestaurants.configuration.security.JwtService;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.User;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.LoginResponse;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.LoginDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.UserDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.UserRepository;
 import com.lodzrestaurants.lodzrestaurants.exceptions.BadRequest;
@@ -22,13 +22,13 @@ public class AuthorizationService {
         this.userRepository = userRepository;
     }
 
-    public LoginResponse login(UserDto userDto) {
+    public LoginDto login(UserDto userDto) {
         User user = authenticateUser(userDto);
 
         String username = user.getUsername();
         String token = jwtService.generateToken(username);
 
-        return new LoginResponse(username, token);
+        return new LoginDto(username, token);
     }
 
     private User authenticateUser(UserDto userDto) {

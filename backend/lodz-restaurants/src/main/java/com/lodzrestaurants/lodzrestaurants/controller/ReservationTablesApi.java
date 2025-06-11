@@ -1,7 +1,7 @@
 package com.lodzrestaurants.lodzrestaurants.controller;
 
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesRequest;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesDto;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequestDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationTableDto;
 import com.lodzrestaurants.lodzrestaurants.service.ReservationTableService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,13 +33,13 @@ public class ReservationTablesApi {
     @Schema(description = "Create a new reservation table for a restaurant")
     @PostMapping
     public ResponseEntity<String> bookTable(
-            @RequestBody ReservationRequest reservationRequest) {
-        return ResponseEntity.ok(reservationTableService.bookTable(reservationRequest));
+            @RequestBody ReservationRequestDto reservationRequestDto) {
+        return ResponseEntity.ok(reservationTableService.bookTable(reservationRequestDto));
     }
 
     @Schema(description = "Generate reservation tables for a restaurant")
     @PostMapping("/generate")
-    public ResponseEntity<String> generateTables(@RequestBody GenerateTablesRequest request) {
+    public ResponseEntity<String> generateTables(@RequestBody GenerateTablesDto request) {
         return ResponseEntity.ok(reservationTableService.generateTables(request));
     }
 }
