@@ -11,6 +11,8 @@ import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantCateg
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
 import com.lodzrestaurants.lodzrestaurants.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +41,17 @@ public class RestaurantService {
                 .stream()
                 .map(mapRestaurantToDto())
                 .toList();
+    }
+
+    public Page<RestaurantDto> getPaginatedRestaurants(Pageable pageable) {
+        return restaurantRepository.findAll(pageable)
+                .map(mapRestaurantToDto());
+    }
+
+    public Page<RestaurantDto> searchRestaurants(String searchTerm, Pageable pageable) {
+        return restaurantRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        searchTerm, searchTerm, pageable)
+                .map(mapRestaurantToDto());
     }
 
     public List<RestaurantCategoryDto> getCategories() {

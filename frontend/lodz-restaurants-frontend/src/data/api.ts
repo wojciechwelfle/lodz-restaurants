@@ -2,9 +2,17 @@ import {API_URL} from "../constants.ts";
 import type IReservationTable from "../types/IReservationTable.ts";
 import type IReservationRequest from "../types/IReservationRequest.ts";
 import type IRestaurantRequest from "../types/IRestaurantRequest.ts";
+import type IPaginatedResponse from "../types/IPaginatedResponse.ts";
 
 export async function getRestaurants() {
     const res = await fetch(`${API_URL}/v1/restaurants`);
+    if (!res.ok) throw new Error("Błąd podczas pobierania restauracji");
+    return res.json();
+}
+
+export async function getPaginatedRestaurants(page: number, size: number, search?: string): Promise<IPaginatedResponse> {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+    const res = await fetch(`${API_URL}/v1/restaurants/paginated?page=${page}&size=${size}${searchParam}`);
     if (!res.ok) throw new Error("Błąd podczas pobierania restauracji");
     return res.json();
 }
@@ -135,4 +143,3 @@ export async function generateReservationTables(
     });
     if (!res.ok) throw new Error("Błąd generowania stolików rezerwacji");
 }
-

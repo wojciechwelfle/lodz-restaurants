@@ -7,6 +7,9 @@ import com.lodzrestaurants.lodzrestaurants.service.RestaurantService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,24 @@ public class RestaurantsApi {
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantDto> getRestaurant(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(restaurantService.getRestaurant(restaurantId));
+    }
+
+    @Schema(name = "Get Restaurants Paginated", description = "Get a paginated list of restaurants with optional search")
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<RestaurantDto>> getPaginatedRestaurants(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RestaurantDto> restaurants;
+
+        if (search != null && !search.isEmpty()) {
+            restaurants = restaurantService.searchRestaurants(search, pageable);
+        } else {
+            restaurants = restaurantService.getPaginatedRestaurants(pageable);
+        }
+
+        return ResponseEntity.ok(restaurants);
     }
 
     @Schema(name = "Get Categories", description = "Get a list of restaurant categories")
