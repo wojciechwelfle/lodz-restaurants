@@ -2,15 +2,14 @@ package com.lodzrestaurants.lodzrestaurants.configuration;
 
 import com.lodzrestaurants.lodzrestaurants.configuration.security.JwtService;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.*;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.DishRepository;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.MenuRepository;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.UserRepository;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Random;
 
 @Slf4j
 @Configuration
@@ -18,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 public class DataInitializer {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final DishRepository dishRepository;
     private final MenuRepository menuRepository;
     private final JwtService jwtService;
@@ -33,6 +33,7 @@ public class DataInitializer {
 
             addSusharniaRestaurant();
             addWhiskeyInTheJarRestaurant();
+            addAdditionalRestaurants();
         };
     }
 
@@ -47,12 +48,17 @@ public class DataInitializer {
     }
 
     public void addSusharniaRestaurant() {
-        Restaurant restaurant = new Restaurant(
-                "Susharnia",
-                "A sushi restaurant offering various lunch options.",
-                new Localization(51.77720949875417, 19.45797264481472),
-                new RestaurantCategory("Sushi")
-        );
+        RestaurantCategory sushiCategory = restaurantCategoryRepository
+                .findByCategoryName("Sushi")
+                .orElseGet(() -> restaurantCategoryRepository.save(new RestaurantCategory("Sushi")));
+        
+        Restaurant restaurant = Restaurant.builder()
+                .name("Susharnia")
+                .description("A sushi restaurant offering various lunch options.")
+                .localization(new Localization(51.77720949875417, 19.45797264481472))
+                .restaurantCategory(sushiCategory)
+                .ranking(new Ranking(4.5))
+                .build();
 
         restaurantRepository.save(restaurant);
 
@@ -122,12 +128,17 @@ public class DataInitializer {
     }
 
     public void addWhiskeyInTheJarRestaurant() {
-        Restaurant restaurant = new Restaurant(
-                "Whiskey in the Jar",
-                "A steakhouse and bar offering a variety of dishes and drinks.",
-                new Localization(51.780408391183364, 19.450547992106593),
-                new RestaurantCategory("Steakhouse")
-        );
+        // Find or create the category first
+        RestaurantCategory steakhouseCategory = restaurantCategoryRepository
+                .findByCategoryName("Steakhouse")
+                .orElseGet(() -> restaurantCategoryRepository.save(new RestaurantCategory("Steakhouse")));
+        
+        Restaurant restaurant = Restaurant.builder()
+                .name("Whiskey in the Jar")
+                .description("A steakhouse and bar offering a variety of dishes and drinks.")
+                .localization(new Localization(51.780408391183364, 19.450547992106593))
+                .restaurantCategory(steakhouseCategory)
+                .build();
 
         restaurantRepository.save(restaurant);
 
@@ -158,4 +169,72 @@ public class DataInitializer {
         dishRepository.save(new Dish("Mini burger Fernando", "Mini burger w zestawie dla dzieci.", 24.0, menu));
     }
 
+    public void addAdditionalRestaurants() {
+        addRestaurantWithMenu("Pasta Paradise", "Italian restaurant specializing in pasta dishes.",
+                new Localization(51.776, 19.459), "Italian", "Spaghetti Carbonara",
+                "Classic Italian pasta with creamy sauce, pancetta, and Parmesan.", 35.0);
+
+        addRestaurantWithMenu("Burger Haven", "Gourmet burgers with unique flavors.",
+                new Localization(51.778, 19.460), "Burgers", "Truffle Burger",
+                "Beef patty with truffle mayo, arugula, and Swiss cheese.", 42.0);
+
+        addRestaurantWithMenu("Taco Fiesta", "Authentic Mexican tacos and more.",
+                new Localization(51.779, 19.461), "Mexican", "Chicken Tacos",
+                "Soft tacos with grilled chicken, salsa, and guacamole.", 28.0);
+
+        addRestaurantWithMenu("Pizza Palace", "Wood-fired pizzas with fresh ingredients.",
+                new Localization(51.780, 19.462), "Pizza", "Margherita Pizza",
+                "Classic pizza with tomato sauce, mozzarella, and basil.", 30.0);
+
+        addRestaurantWithMenu("Sushi World", "Fresh sushi and sashimi.",
+                new Localization(51.781, 19.463), "Sushi", "Salmon Nigiri",
+                "Two pieces of fresh salmon on seasoned rice.", 25.0);
+
+        addRestaurantWithMenu("Steakhouse Deluxe", "Premium steaks and sides.",
+                new Localization(51.782, 19.464), "Steakhouse", "Ribeye Steak",
+                "Grilled ribeye steak with garlic butter and mashed potatoes.", 85.0);
+
+        addRestaurantWithMenu("Vegan Delight", "Plant-based meals for everyone.",
+                new Localization(51.783, 19.465), "Vegan", "Vegan Buddha Bowl",
+                "Quinoa, roasted vegetables, and tahini dressing.", 32.0);
+
+        addRestaurantWithMenu("Seafood Shack", "Fresh seafood dishes.",
+                new Localization(51.784, 19.466), "Seafood", "Grilled Salmon",
+                "Grilled salmon with lemon butter sauce and asparagus.", 50.0);
+
+        addRestaurantWithMenu("BBQ Barn", "Smoked meats and BBQ classics.",
+                new Localization(51.785, 19.467), "BBQ", "Pulled Pork Sandwich",
+                "Slow-cooked pulled pork with BBQ sauce on a brioche bun.", 38.0);
+
+        addRestaurantWithMenu("Dessert Dreams", "Sweet treats and desserts.",
+                new Localization(51.786, 19.468), "Desserts", "Chocolate Lava Cake",
+                "Warm chocolate cake with a gooey center, served with vanilla ice cream.", 20.0);
+    }
+
+    private void addRestaurantWithMenu(String name, String description, Localization localization,
+                                       String category, String dishName, String dishDescription, double price) {
+        RestaurantCategory restaurantCategory = restaurantCategoryRepository
+                .findByCategoryName(category)
+                .orElseGet(() -> {
+                    RestaurantCategory newCategory = new RestaurantCategory(category);
+                    return restaurantCategoryRepository.save(newCategory);
+                });
+
+        Restaurant restaurant = Restaurant.builder()
+                .name(name)
+                .description(description)
+                .localization(localization)
+                .restaurantCategory(restaurantCategory)
+                .ranking(new Ranking((double)new Random().nextInt(2, 4)))
+                .build();
+        restaurantRepository.save(restaurant);
+
+        Menu menu = new Menu(name + " Menu", "Menu for " + name);
+        menuRepository.save(menu);
+
+        restaurant.setMenu(menu);
+        restaurantRepository.save(restaurant);
+
+        dishRepository.save(new Dish(dishName, dishDescription, price, menu));
+    }
 }

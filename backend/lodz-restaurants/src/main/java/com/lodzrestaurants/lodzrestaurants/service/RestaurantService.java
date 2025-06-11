@@ -98,7 +98,8 @@ public class RestaurantService {
                 restaurant.getDescription(),
                 new double[]{restaurant.getLocalization().getLatitude(), restaurant.getLocalization().getLongitude()},
                 restaurant.getRestaurantCategory().getCategoryName(),
-                restaurant.getMenu() != null ? restaurant.getMenu().getMenuId() : null
+                restaurant.getMenu() != null ? restaurant.getMenu().getMenuId() : null,
+                restaurant.getRanking() != null ? restaurant.getRanking().getRankingValue() : 0.0
         );
     }
 

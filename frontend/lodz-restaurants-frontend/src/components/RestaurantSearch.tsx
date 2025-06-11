@@ -32,7 +32,7 @@ const RestaurantSearch: React.FC<RestaurantSearchProps> = ({
                         onChange={(e) => onCategoryChange(e.target.value)}
                         label="Kategoria"
                         fullWidth
-                    >
+                        variant={"outlined"}>
                         <MenuItem value="">Wszystkie</MenuItem>
                         {categories && categories.length > 0 ? (
                             categories.map((category, index) => (

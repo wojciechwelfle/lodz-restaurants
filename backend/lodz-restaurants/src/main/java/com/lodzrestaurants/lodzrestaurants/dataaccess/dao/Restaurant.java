@@ -1,6 +1,8 @@
 package com.lodzrestaurants.lodzrestaurants.dataaccess.dao;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +10,8 @@ import lombok.Setter;
 @Table(name = "restaurants")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class Restaurant {
 
     @Id
@@ -22,7 +26,7 @@ public class Restaurant {
     @JoinColumn(name = "localization_id", nullable = false)
     private Localization localization;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "restaurant_category_id", nullable = false)
     private RestaurantCategory restaurantCategory;
 
@@ -37,36 +41,13 @@ public class Restaurant {
     public Restaurant() {
     }
 
-    public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory) {
-        this.name = name;
-        this.description = description;
-        this.localization = localization;
-        this.restaurantCategory = restaurantCategory;
-        this.ranking = null;
-    }
-
     public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory, Menu menu) {
         this.name = name;
         this.description = description;
         this.localization = localization;
         this.restaurantCategory = restaurantCategory;
         this.ranking = null;
-    }
-
-    public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory, Ranking ranking) {
-        this.name = name;
-        this.description = description;
-        this.localization = localization;
-        this.restaurantCategory = restaurantCategory;
-        this.ranking = ranking;
-    }
-
-    public Restaurant(String name, String description, Localization localization, RestaurantCategory restaurantCategory, Ranking ranking, Menu menu) {
-        this.name = name;
-        this.description = description;
-        this.localization = localization;
-        this.restaurantCategory = restaurantCategory;
-        this.ranking = ranking;
         this.menu = menu;
     }
+
 }

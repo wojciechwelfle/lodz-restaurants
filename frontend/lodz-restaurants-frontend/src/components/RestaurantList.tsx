@@ -1,6 +1,7 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
-import {Card, CardContent, Typography, Button, CardActions, Box} from "@mui/material";
+import {Card, CardContent, Typography, Button, CardActions, Box, Rating} from "@mui/material";
+import StarIcon from '@mui/material/Icon';
 import type IRestaurant from "../types/IRestaurant";
 
 interface RestaurantListProps {
@@ -30,9 +31,29 @@ const RestaurantList: React.FC<RestaurantListProps> = ({restaurants, onSelectRes
                     }}
                 >
                     <CardContent>
-                        <Typography variant="h6" component="div" sx={{fontWeight: "bold"}}>
-                            {restaurant.name}
-                        </Typography>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <Typography variant="h6" component="div" sx={{fontWeight: "bold"}}>
+                                {restaurant.name}
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Rating
+                                    value={restaurant.rating || 0}
+                                    readOnly
+                                    precision={0.5}
+                                    size="small"
+                                    emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit"></StarIcon>}
+                                />
+                                {restaurant.rating ? (
+                                    <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
+                                        {restaurant.rating.toFixed(1)}
+                                    </Typography>
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
+                                        Brak ocen
+                                    </Typography>
+                                )}
+                            </Box>
+                        </Box>
                         <Typography variant="body2" color="text.secondary" gutterBottom>
                             {restaurant.description}
                         </Typography>
