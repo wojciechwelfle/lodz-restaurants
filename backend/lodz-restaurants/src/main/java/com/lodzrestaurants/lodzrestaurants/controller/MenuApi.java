@@ -62,8 +62,4 @@ public class MenuApi {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/admin/test")
-    public ResponseEntity<String> adminEndpoint() {
-        return ResponseEntity.ok("Admin access granted");
-    }
 }
