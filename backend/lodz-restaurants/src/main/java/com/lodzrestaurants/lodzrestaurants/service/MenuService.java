@@ -30,17 +30,27 @@ public class MenuService {
         this.restaurantRepository = restaurantRepository;
     }
 
-    public MenuDto getMenu(Long menuId) {
-        return menuRepository.findById(menuId)
-                .map(mapMenuToDto())
-                .orElseThrow(() -> new NotFoundException("Menu not found"));
-    }
-
     public List<MenuDto> getAllMenus() {
         return menuRepository.findAll()
                 .stream()
                 .map(mapMenuToDto())
                 .toList();
+    }
+
+    public MenuDto getMenu(Long menuId, boolean loggedIn) {
+        return menuRepository.findById(menuId)
+                .map(menu -> mapMenuToDto(loggedIn).apply(menu))
+                .orElseThrow(() -> new NotFoundException("Menu not found"));
+    }
+
+    private Function<Menu, MenuDto> mapMenuToDto(boolean loggedIn) {
+        return menu -> new MenuDto(
+                menu.getMenuId(),
+                getRestaurantNameOrNullIfNotFound(menu.getMenuId()),
+                menu.getMenuName(),
+                menu.getMenuDescription(),
+                getDishListAndMapToDto(menu.getMenuId(), loggedIn)
+        );
     }
 
     private Function<Menu, MenuDto> mapMenuToDto() {
@@ -66,7 +76,22 @@ public class MenuService {
                         dish.getDishId(),
                         dish.getName(),
                         dish.getDescription(),
-                        dish.getPrice()
+                        dish.getPrice(),
+                        dish.isVip()
+                ))
+                .toList();
+    }
+
+    private List<DishDto> getDishListAndMapToDto(Long menuId, boolean loggedIn) {
+        return dishRepository.findAllByMenuId(menuId)
+                .stream()
+                .filter(dish -> loggedIn || !dish.isVip()) // Filter VIP dishes if not logged in
+                .map(dish -> new DishDto(
+                        dish.getDishId(),
+                        dish.getName(),
+                        dish.getDescription(),
+                        dish.getPrice(),
+                        dish.isVip()
                 ))
                 .toList();
     }

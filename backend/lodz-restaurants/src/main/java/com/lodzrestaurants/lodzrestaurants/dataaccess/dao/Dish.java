@@ -24,6 +24,9 @@ public class Dish {
     @Column(name = "price", nullable = false)
     private double price;
 
+    @Column(name = "vip", nullable = false)
+    private boolean vip = false;
+
     @ManyToOne
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
@@ -36,5 +39,13 @@ public class Dish {
         this.description = description;
         this.price = price;
         this.menu = menu;
+    }
+
+    public Dish(String name, String description, double price, Menu menu, boolean vip) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.menu = menu;
+        this.vip = vip;
     }
 }

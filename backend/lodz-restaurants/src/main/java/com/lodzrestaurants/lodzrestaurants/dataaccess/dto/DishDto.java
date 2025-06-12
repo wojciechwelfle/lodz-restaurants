@@ -4,6 +4,7 @@ public record DishDto(
         Long dishId,
         String dishName,
         String dishDescription,
-        double dishPrice
+        double dishPrice,
+        boolean vip // New field for VIP dishes
 ) {
 }

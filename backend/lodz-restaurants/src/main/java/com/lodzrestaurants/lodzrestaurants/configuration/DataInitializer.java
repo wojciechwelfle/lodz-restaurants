@@ -41,7 +41,9 @@ public class DataInitializer {
         if (userRepository.existsById("admin")) {
             return;
         }
-        User adminUser = new User("admin", "admin123");
+        User adminUser = new User("admin", "admin123", User.UserRole.ADMIN);
+        User user = new User("user", "user123", User.UserRole.USER);
+        userRepository.save(user);
         userRepository.save(adminUser);
         log.info("Admin user created with username: {} and password: {}", adminUser.getUsername(), adminUser.getPassword());
         log.info("Admin JWT Token: {}", jwtService.generateToken(adminUser.getUsername()));
@@ -68,7 +70,7 @@ public class DataInitializer {
         restaurant.setMenu(menu);
         restaurantRepository.save(restaurant);
 
-        dishRepository.save(new Dish("Beef lunch", "wołowina w sosie chili-tahini, warzywa, ryż/makaron\nfried sweet-chili beef, vegetables, rice or udon(noodles)", 42.0, menu));
+        dishRepository.save(new Dish("Beef lunch", "wołowina w sosie chili-tahini, warzywa, ryż/makaron\nfried sweet-chili beef, vegetables, rice or udon(noodles)", 42.0, menu, true));
         dishRepository.save(new Dish("Chicken lunch", "udko z kurczaka w sosie sojowo-miodowym, warzywa, ryż/makaron\nchicken in soya-honey sauce, vegetables, rice or udon", 42.0, menu));
         dishRepository.save(new Dish("Classic lunch 13 sztuk", "2 nigiri, 5 philadelphia sake, 6 hosomaki", 54.0, menu));
         dishRepository.save(new Dish("Grilled lunch 10 sztuk", "5 tempura tamago, 5 philadelphia sake teryiaki\nzdjęcie poglądowe, nie stanowi oferty", 49.0, menu));
@@ -78,7 +80,7 @@ public class DataInitializer {
         dishRepository.save(new Dish("Nigiri z rybą", "dowolna dostępna ryba (łosoś, tuńczyk, krewetka, węgorz, seriola) - 2szt.\nAny available fish (salmon, tuna, shrimp, eel) - 2pcs.", 25.0, menu));
         dishRepository.save(new Dish("Hosomaki Kanpyo Tempura", "Hosomaki z kanpyo, wasabi, majonez truflowy sos unagi - całość zapieczona w tempurze.", 23.0, menu));
         dishRepository.save(new Dish("Hosomaki vege", "Jednoskładnikowa rolka z dowolnym dostępne warzywem lub owocem (kanpyo, avocado, mango, ogórek, tamago)\nAny available vegetable or fruit (kanpyo, avocado, mango, cucumber, tamago)", 18.0, menu));
-        dishRepository.save(new Dish("Hosomaki z rybą", "Jednoskładnikowa rolka z dowolną dostępną rybą (łosoś, tuńczyk, węgorz, seriola)\nAny available fish (salmon, tuna, shrimp, eel)", 22.0, menu));
+        dishRepository.save(new Dish("Hosomaki z rybą", "Jednoskładnikowa rolka z dowolną dostępną rybą (łosoś, tuńczyk, węgorz, seriola)\nAny available fish (salmon, tuna, shrimp, eel)", 22.0, menu, true));
         dishRepository.save(new Dish("Bluefin futomaki", "Tuńczyk błękitnopłetwy, avocado, sezam, szczypior, nikiri", 40.0, menu));
         dishRepository.save(new Dish("Deluxe futomaki", "łosoś, tuńczyk, ogórek, mango, kanpyo, kawior\nsalmon, tuna, cucumber, mango, kanpyo, caviar.", 29.0, menu));
         dishRepository.save(new Dish("Fit futomaki (bez ryżu)", "łosoś, tuńczyk, mango, ogórek, kanpyo, sałata, serek.\nsalmon, tuna, mango, cucumber, kanpyo, salad, philadelphia - all without rice.", 34.0, menu));

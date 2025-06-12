@@ -19,7 +19,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<AppPage/>}/>
                         <Route path="/login" element={<Login onLogin={(token) => setToken(token)} title={"Zaloguj się!"}/>}/>
-                        <Route path="/menu/:id" element={<MenuPage/>}/>
+                        <Route path="/menu/:id" element={<MenuPage token={token}/>}/>
                         <Route path="/reservation/:id" element={<ReservationTablesPage/>}/>
                         <Route path="/admin" element={<AdminPage/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>

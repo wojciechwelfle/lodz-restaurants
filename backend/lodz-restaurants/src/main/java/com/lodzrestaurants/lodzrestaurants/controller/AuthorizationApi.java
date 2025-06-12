@@ -5,6 +5,7 @@ import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.UserDto;
 import com.lodzrestaurants.lodzrestaurants.service.AuthorizationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,5 +28,10 @@ public class AuthorizationApi {
     public ResponseEntity<LoginDto> login(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(authorizationService.login(userDto));
     }
-
+    
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody UserDto userDto) {
+        authorizationService.register(userDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 }

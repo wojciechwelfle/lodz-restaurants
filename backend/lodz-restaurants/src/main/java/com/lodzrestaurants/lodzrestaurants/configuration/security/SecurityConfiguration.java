@@ -24,6 +24,7 @@ public class SecurityConfiguration {
 
     private static final List<EndpointAccess> WHITELIST = List.of(
             new EndpointAccess(HttpMethod.POST, "/api/v1/authorization/login"),
+            new EndpointAccess(HttpMethod.POST, "/api/v1/authorization/register"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants/*"),
             new EndpointAccess(HttpMethod.GET, "/api/v1/restaurants/categories"),
@@ -45,6 +46,15 @@ public class SecurityConfiguration {
                     WHITELIST.forEach(entry ->
                             auth.requestMatchers(entry.method(), entry.path()).permitAll()
                     );
+
+                    auth.requestMatchers(HttpMethod.POST, "/api/v1/restaurants/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/v1/restaurants/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/v1/restaurants/**").hasRole("ADMIN");
+
+                    auth.requestMatchers(HttpMethod.POST, "/api/v1/menu/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/v1/menu/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/v1/menu/**").hasRole("ADMIN");
+
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> exceptionHandling
