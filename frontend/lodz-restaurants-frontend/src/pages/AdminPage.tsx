@@ -1,5 +1,5 @@
 import {useState} from "react";
-import AdminLogin from "../components/AdminLogin.tsx";
+import Login from "../components/Login.tsx";
 import AdminView from "../components/AdminView.tsx";
 
 export default function AdminPage() {
@@ -7,7 +7,7 @@ export default function AdminPage() {
 
     return (
         <>
-            {!token && (<AdminLogin onLogin={(token) => setToken(token)}/>)}
+            {!token && (<Login onLogin={(token) => setToken(token)} title={"Panel administratora"}/>)}
             {token && (<AdminView token={token} />)}
         </>
     );

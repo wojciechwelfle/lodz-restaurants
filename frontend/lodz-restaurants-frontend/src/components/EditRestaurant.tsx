@@ -24,7 +24,8 @@ export default function EditRestaurant({
         description: "",
         position: [0, 0],
         category: "",
-        menuId: null
+        menuId: null,
+        rating: null
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");

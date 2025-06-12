@@ -1,8 +1,7 @@
-import React from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 
-const Navbar: React.FC = () => {
+const Navbar = ({isLogin} : {isLogin : boolean}) => {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -12,6 +11,9 @@ const Navbar: React.FC = () => {
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     🍽️ Łódzkie Restauracje
                 </Typography>
+                {location.pathname !== "/login" && !isLogin && (
+                    <Button color="inherit" onClick={() => {navigate("/login")}}>Zaloguj się</Button>
+                )}
                 {location.pathname !== "/" && (
                     <Button color="inherit" onClick={() => {navigate("/")}}>Strona główna</Button>
                 )}

@@ -1,15 +1,22 @@
 import {useState} from "react";
 import {Box, Button, TextField, Typography} from "@mui/material";
 import {login} from "../data/api.ts";
+import {useLocation, useNavigate} from "react-router-dom";
 
-const AdminLogin = ({ onLogin }: { onLogin: (token: string|null) => void }) => {
+const Login = ({ onLogin, title }: { onLogin: (token: string|null) => void, title: string }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogin = () => {
         login(username, password)
             .then((token) => {
                 onLogin(token);
+                if (location.pathname === '/login') {
+                    navigate("/");
+                }
             })
             .catch(() => {
                 onLogin(null);
@@ -26,7 +33,7 @@ const AdminLogin = ({ onLogin }: { onLogin: (token: string|null) => void }) => {
             sx={{ mt: 8 }}
         >
             <Typography variant="h5" gutterBottom>
-                Admin Login
+                {title}
             </Typography>
             <TextField
                 label="Username"
@@ -55,4 +62,4 @@ const AdminLogin = ({ onLogin }: { onLogin: (token: string|null) => void }) => {
     );
 };
 
-export default AdminLogin;
+export default Login;
