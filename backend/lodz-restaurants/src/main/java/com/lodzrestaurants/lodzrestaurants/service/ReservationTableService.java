@@ -2,12 +2,16 @@ package com.lodzrestaurants.lodzrestaurants.service;
 
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.ReservationTable;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.User;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequestDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationTableDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.ReservationTableRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.UserRepository;
 import com.lodzrestaurants.lodzrestaurants.exceptions.BadRequest;
+import com.lodzrestaurants.lodzrestaurants.exceptions.NotFoundException;
+import com.lodzrestaurants.lodzrestaurants.configuration.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +27,18 @@ public class ReservationTableService {
 
     private final ReservationTableRepository reservationTableRepository;
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     @Autowired
     public ReservationTableService(ReservationTableRepository reservationTableRepository,
-                                   RestaurantRepository restaurantRepository) {
+                                   RestaurantRepository restaurantRepository,
+                                   UserRepository userRepository,
+                                   JwtService jwtService) {
         this.reservationTableRepository = reservationTableRepository;
         this.restaurantRepository = restaurantRepository;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     public List<ReservationTableDto> getAllReservationTables(Long restaurantId) {
@@ -113,5 +123,39 @@ public class ReservationTableService {
                 reservationTable.getHour(),
                 reservationTable.isAvailable()
         );
+    }
+
+    @Transactional
+    public String quickReservation(Long reservationTableId, String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new BadRequest("Invalid or missing authentication token");
+        }
+
+        String jwt = token.substring(7);
+        String username;
+
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            log.error("Failed to extract username from token", e);
+            throw new BadRequest("Invalid authentication token");
+        }
+
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        ReservationTable reservationTable = reservationTableRepository.findById(reservationTableId)
+                .orElseThrow(() -> new NotFoundException("Reservation table not found with ID: " + reservationTableId));
+        if (!reservationTable.isAvailable()) {
+            throw new BadRequest("Reservation table is not available for quick reservation.");
+        }
+        reservationTable.setFirstName(user.getFirstName());
+        reservationTable.setLastName(user.getLastName());
+        reservationTable.setPhoneNumber(user.getPhoneNumber());
+        reservationTable.setEmail(user.getEmail());
+        reservationTable.setAvailable(false);
+        reservationTableRepository.save(reservationTable);
+        log.info("Quick reservation created for table ID: {}", reservationTableId);
+        return "Quick reservation created successfully for table ID: " + reservationTableId;
     }
 }

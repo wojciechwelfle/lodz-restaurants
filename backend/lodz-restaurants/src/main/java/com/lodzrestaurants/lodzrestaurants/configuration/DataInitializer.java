@@ -42,7 +42,7 @@ public class DataInitializer {
             return;
         }
         User adminUser = new User("admin", "admin123", User.UserRole.ADMIN);
-        User user = new User("user", "user123", User.UserRole.USER);
+        User user = new User("user", "user123", User.UserRole.USER, "Wojciech", "Wafel", "123456789", "wojciech.wafel@gmail.com");
         userRepository.save(user);
         userRepository.save(adminUser);
         log.info("Admin user created with username: {} and password: {}", adminUser.getUsername(), adminUser.getPassword());

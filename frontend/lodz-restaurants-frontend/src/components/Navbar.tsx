@@ -11,7 +11,7 @@ const Navbar = ({isLogin} : {isLogin : boolean}) => {
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     🍽️ Łódzkie Restauracje
                 </Typography>
-                {location.pathname !== "/login" && !isLogin && (
+                {location.pathname !== "/login" && location.pathname !== "/admin" && !isLogin && (
                     <Button color="inherit" onClick={() => {navigate("/login")}}>Zaloguj się</Button>
                 )}
                 {location.pathname !== "/" && (

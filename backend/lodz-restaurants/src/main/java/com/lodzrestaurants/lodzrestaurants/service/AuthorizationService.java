@@ -42,8 +42,15 @@ public class AuthorizationService {
             throw new BadRequest("Username already exists");
         }
 
-        User user = new User(userDto.username(), userDto.password());
-        
+        User user = new User(
+                userDto.username(),
+                userDto.password(),
+                userDto.firstName(),
+                userDto.lastName(),
+                userDto.phoneNumber(),
+                userDto.email()
+        );
+
         userRepository.save(user);
     }
 

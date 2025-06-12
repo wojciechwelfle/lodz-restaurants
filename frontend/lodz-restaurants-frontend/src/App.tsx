@@ -5,11 +5,18 @@ import MenuPage from "./pages/MenuPage.tsx";
 import Navbar from "./components/Navbar.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
 import ReservationTablesPage from "./pages/ReservationTablesPage.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Login from "./components/Login.tsx";
+import Register from "./components/Register.tsx";
 
 function App() {
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+
+    useEffect(() => {
+        if (token) {
+            localStorage.setItem('token', token);
+        }
+    }, [token]);
 
     return (
         <>
@@ -19,8 +26,9 @@ function App() {
                     <Routes>
                         <Route path="/" element={<AppPage/>}/>
                         <Route path="/login" element={<Login onLogin={(token) => setToken(token)} title={"Zaloguj się!"}/>}/>
+                        <Route path="/register" element={<Register title={"Zarejestruj się!"}/>}/>
                         <Route path="/menu/:id" element={<MenuPage token={token}/>}/>
-                        <Route path="/reservation/:id" element={<ReservationTablesPage/>}/>
+                        <Route path="/reservation/:id" element={<ReservationTablesPage token={token}/>}/>
                         <Route path="/admin" element={<AdminPage/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                     </Routes>

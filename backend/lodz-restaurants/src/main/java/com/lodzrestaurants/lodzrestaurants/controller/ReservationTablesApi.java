@@ -37,6 +37,14 @@ public class ReservationTablesApi {
         return ResponseEntity.ok(reservationTableService.bookTable(reservationRequestDto));
     }
 
+    @Schema(description = "Quick reservation for logged in users")
+    @PostMapping("/quick/{reservationTableId}")
+    public ResponseEntity<String> quickReservation(
+            @PathVariable Long reservationTableId,
+            @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(reservationTableService.quickReservation(reservationTableId, token));
+    }
+
     @Schema(description = "Generate reservation tables for a restaurant")
     @PostMapping("/generate")
     public ResponseEntity<String> generateTables(@RequestBody GenerateTablesDto request) {

@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {getAllReservationTables, makeReservation} from "../data/api.ts";
+import {getAllReservationTables, makeQuickReservation, makeReservation} from "../data/api.ts";
 import type IReservationTable from "../types/IReservationTable.ts";
 import type IReservationRequest from "../types/IReservationRequest.ts";
 import {
-    Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, Switch, 
-    FormControlLabel, Box, Dialog, DialogTitle, DialogContent, DialogActions, TextField, 
+    Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, Switch,
+    FormControlLabel, Box, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
     Snackbar, Alert
 } from "@mui/material";
 
-const ReservationTablesPage: React.FC = () => {
+const ReservationTablesPage = ({token}: { token: string | null }) => {
     const {id} = useParams<{ id: string }>();
     const [reservationTables, setReservationTables] = useState<IReservationTable[]>([]);
     const [showAvailableOnly, setShowAvailableOnly] = useState<boolean>(false);
@@ -20,7 +20,7 @@ const ReservationTablesPage: React.FC = () => {
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
     const [snackbarMessage, setSnackbarMessage] = useState<string>("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-    
+
     const [formData, setFormData] = useState<Omit<IReservationRequest, "reservationTableId">>({
         firstName: "",
         lastName: "",
@@ -60,6 +60,28 @@ const ReservationTablesPage: React.FC = () => {
         setIsDialogOpen(true);
     };
 
+    const handleQuickReserve = async (tableId: number) => {
+        if (!token) {
+            setSnackbarMessage("Musisz być zalogowany, aby dokonać szybkiej rezerwacji");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+            return;
+        }
+
+        try {
+            await makeQuickReservation(tableId, token);
+            setSnackbarMessage("Stolik został szybko zarezerwowany pomyślnie!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
+            loadReservationTables(); // Refresh the table data
+        } catch (error) {
+            console.error("Error making quick reservation:", error);
+            setSnackbarMessage("Wystąpił błąd podczas szybkiej rezerwacji stolika.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        }
+    };
+
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
         setFormData({
@@ -72,7 +94,7 @@ const ReservationTablesPage: React.FC = () => {
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -89,36 +111,36 @@ const ReservationTablesPage: React.FC = () => {
 
     const validateForm = (): boolean => {
         const errors: Record<string, string> = {};
-        
+
         if (!formData.firstName.trim()) {
             errors.firstName = "Imię jest wymagane";
         }
-        
+
         if (!formData.lastName.trim()) {
             errors.lastName = "Nazwisko jest wymagane";
         }
-        
+
         const phoneRegex = /^\+?[0-9]{9,15}$/;
         if (!formData.phoneNumber.trim()) {
             errors.phoneNumber = "Numer telefonu jest wymagany";
         } else if (!phoneRegex.test(formData.phoneNumber.trim())) {
             errors.phoneNumber = "Nieprawidłowy format numeru telefonu";
         }
-        
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email.trim()) {
             errors.email = "Email jest wymagany";
         } else if (!emailRegex.test(formData.email.trim())) {
             errors.email = "Nieprawidłowy format adresu email";
         }
-        
+
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
     const handleSubmitReservation = async () => {
         if (!validateForm() || selectedTableId === null) return;
-        
+
         try {
             const reservationData: IReservationRequest = {
                 reservationTableId: selectedTableId,
@@ -170,7 +192,7 @@ const ReservationTablesPage: React.FC = () => {
                         <TableCell>Data</TableCell>
                         <TableCell>Siedzenia</TableCell>
                         <TableCell>Status</TableCell>
-                        <TableCell>Zarezerwuj</TableCell>
+                        <TableCell>Akcje</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -196,13 +218,25 @@ const ReservationTablesPage: React.FC = () => {
                             </TableCell>
                             <TableCell>
                                 {table.isAvailable ? (
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => handleReserve(table.reservationId, table.tableNumber)}
-                                    >
-                                        Rezerwuj
-                                    </Button>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button
+                                            color="primary"
+                                            variant="contained"
+                                            onClick={() => handleReserve(table.reservationId, table.tableNumber)}
+                                        >
+                                            Rezerwuj
+                                        </Button>
+
+                                        {token && (
+                                            <Button
+                                                color="success"
+                                                variant="contained"
+                                                onClick={() => handleQuickReserve(table.reservationId)}
+                                            >
+                                                Szybka rezerwacja
+                                            </Button>
+                                        )}
+                                    </Box>
                                 ) : (
                                     <Button variant="contained" disabled>
                                         Zajęte
@@ -220,7 +254,7 @@ const ReservationTablesPage: React.FC = () => {
                     Rezerwacja stolika {selectedTableNumber}
                 </DialogTitle>
                 <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, my: 2 }}>
+                    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, my: 2}}>
                         <TextField
                             label="Imię"
                             name="firstName"
@@ -266,9 +300,9 @@ const ReservationTablesPage: React.FC = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>Anuluj</Button>
-                    <Button 
-                        onClick={handleSubmitReservation} 
-                        color="primary" 
+                    <Button
+                        onClick={handleSubmitReservation}
+                        color="primary"
                         variant="contained"
                     >
                         Zarezerwuj
@@ -277,7 +311,7 @@ const ReservationTablesPage: React.FC = () => {
             </Dialog>
 
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{width: '100%'}}>
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
@@ -286,3 +320,4 @@ const ReservationTablesPage: React.FC = () => {
 }
 
 export default ReservationTablesPage;
+
