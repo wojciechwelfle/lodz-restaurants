@@ -11,11 +11,4 @@ public record UserDto(
         String phoneNumber,
         String email
 ) {
-    public UserDto(String username, String password) {
-        this(username, password, null, null, null, null, null);
-    }
-    
-    public UserDto(String username, String password, UserRole role) {
-        this(username, password, role, null, null, null, null);
-    }
 }
