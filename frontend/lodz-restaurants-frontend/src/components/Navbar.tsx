@@ -1,7 +1,12 @@
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 
-const Navbar = ({isLogin} : {isLogin : boolean}) => {
+interface NavbarProps {
+    isLogin: boolean;
+    onLogout: () => void;
+}
+
+const Navbar = ({ isLogin, onLogout }: NavbarProps) => {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -13,6 +18,9 @@ const Navbar = ({isLogin} : {isLogin : boolean}) => {
                 </Typography>
                 {location.pathname !== "/login" && location.pathname !== "/admin" && !isLogin && (
                     <Button color="inherit" onClick={() => {navigate("/login")}}>Zaloguj się</Button>
+                )}
+                {isLogin && (
+                    <Button color="inherit" onClick={onLogout}>Wyloguj się</Button>
                 )}
                 {location.pathname !== "/" && (
                     <Button color="inherit" onClick={() => {navigate("/")}}>Strona główna</Button>

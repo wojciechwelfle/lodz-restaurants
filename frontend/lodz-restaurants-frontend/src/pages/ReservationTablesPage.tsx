@@ -14,6 +14,7 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
     const [reservationTables, setReservationTables] = useState<IReservationTable[]>([]);
     const [showAvailableOnly, setShowAvailableOnly] = useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false); // New state for confirmation dialog
     const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
     const [selectedTableNumber, setSelectedTableNumber] = useState<string | null>(null);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -60,7 +61,7 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
         setIsDialogOpen(true);
     };
 
-    const handleQuickReserve = async (tableId: number) => {
+    const handleQuickReserve = async (tableId: number, tableNumber: number) => {
         if (!token) {
             setSnackbarMessage("Musisz być zalogowany, aby dokonać szybkiej rezerwacji");
             setSnackbarSeverity("error");
@@ -68,8 +69,18 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
             return;
         }
 
+        // Open confirmation dialog instead of immediately reserving
+        setSelectedTableId(tableId);
+        setSelectedTableNumber(tableNumber as unknown as string);
+        setIsConfirmDialogOpen(true);
+    };
+
+    const confirmQuickReservation = async () => {
+        if (!token || selectedTableId === null) return;
+
         try {
-            await makeQuickReservation(tableId, token);
+            await makeQuickReservation(selectedTableId, token);
+            setIsConfirmDialogOpen(false);
             setSnackbarMessage("Stolik został szybko zarezerwowany pomyślnie!");
             setSnackbarSeverity("success");
             setSnackbarOpen(true);
@@ -80,6 +91,10 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
             setSnackbarSeverity("error");
             setSnackbarOpen(true);
         }
+    };
+
+    const closeConfirmDialog = () => {
+        setIsConfirmDialogOpen(false);
     };
 
     const handleCloseDialog = () => {
@@ -231,7 +246,7 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
                                             <Button
                                                 color="success"
                                                 variant="contained"
-                                                onClick={() => handleQuickReserve(table.reservationId)}
+                                                onClick={() => handleQuickReserve(table.reservationId, table.tableNumber)}
                                             >
                                                 Szybka rezerwacja
                                             </Button>
@@ -310,6 +325,28 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
                 </DialogActions>
             </Dialog>
 
+            {/* Quick Reservation Confirmation Dialog */}
+            <Dialog open={isConfirmDialogOpen} onClose={closeConfirmDialog}>
+                <DialogTitle>
+                    Potwierdzenie szybkiej rezerwacji
+                </DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Czy na pewno chcesz dokonać szybkiej rezerwacji stolika nr {selectedTableNumber}?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={closeConfirmDialog}>Anuluj</Button>
+                    <Button
+                        onClick={confirmQuickReservation}
+                        color="success"
+                        variant="contained"
+                    >
+                        Potwierdź rezerwację
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{width: '100%'}}>
                     {snackbarMessage}
@@ -320,4 +357,3 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
 }
 
 export default ReservationTablesPage;
-
