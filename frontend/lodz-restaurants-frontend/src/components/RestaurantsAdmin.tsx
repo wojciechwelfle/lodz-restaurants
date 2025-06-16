@@ -166,7 +166,7 @@ export default function RestaurantsAdmin({token} : { token: string }) {
                             count={totalPages} 
                             page={page + 1} 
                             onChange={handlePageChange} 
-                            color="primary" 
+                            color="primary"
                         />
                     </Stack>
                 </>
@@ -179,6 +179,7 @@ export default function RestaurantsAdmin({token} : { token: string }) {
                     )}
                 </Box>
             )}
+            <br/>
         </>
     );
 }

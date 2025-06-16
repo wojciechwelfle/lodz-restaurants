@@ -1,6 +1,8 @@
 package com.lodzrestaurants.lodzrestaurants.dataaccess.dao;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +10,8 @@ import lombok.Setter;
 @Table(name = "dish")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class Dish {
 
     @Id

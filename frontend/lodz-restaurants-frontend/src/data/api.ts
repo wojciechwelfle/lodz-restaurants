@@ -3,6 +3,7 @@ import type IReservationTable from "../types/IReservationTable.ts";
 import type IReservationRequest from "../types/IReservationRequest.ts";
 import type IRestaurantRequest from "../types/IRestaurantRequest.ts";
 import type IPaginatedResponse from "../types/IPaginatedResponse.ts";
+import type IDish from "../types/IDish.ts";
 
 export async function getRestaurants() {
     const res = await fetch(`${API_URL}/v1/restaurants`);
@@ -172,4 +173,21 @@ export async function makeQuickReservation(reservationTableId: number, token: st
         },
     });
     if (!res.ok) throw new Error("Błąd podczas szybkiej rezerwacji stolika");
+}
+
+export async function addDish(
+    menuId: number,
+    dish: { dishName?: string; dishDescription?: string; dishPrice?: number; vip: boolean },
+    token: string
+): Promise<IDish> {
+    const res = await fetch(`${API_URL}/v1/dishes/${menuId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(dish),
+    });
+    if (!res.ok) throw new Error("Błąd dodawania dania");
+    return res.json();
 }
