@@ -3,5 +3,7 @@ export default interface IRestaurant {
     name: string;
     description: string;
     position: [number, number]; // [latitude, longitude]
-    website?: string;
+    category: string,
+    menuId: number | null,
+    rating: number | null
 }
