@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect, useCallback} from "react";
+import React, {useState, useMemo, useEffect, useCallback, useRef} from "react";
 import Map from "../components/Map.tsx";
 import restaurantsData from "../data/restaurants.ts";
 import type IRestaurant from "../types/IRestaurant.ts";
@@ -19,13 +19,17 @@ const AppPage: React.FC = () => {
     const [page, setPage] = useState<number>(1);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [hasMore, setHasMore] = useState<boolean>(true);
+    const isFetchingRef = useRef(false);
 
-    const ITEMS_PER_PAGE = 3;
+    const ITEMS_PER_PAGE = 5;
 
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
     useEffect(() => {
+        if (isFetchingRef.current) return;
+
         if (ONLINE_MODE) {
+            isFetchingRef.current = true;
             setIsLoading(true);
             Promise.all([
                 fetch(`${API_URL}/v1/restaurants`).then((response) => response.json()),
@@ -35,17 +39,23 @@ const AppPage: React.FC = () => {
                     setAllRestaurants(restaurantsData);
                     setCategories(categoriesData.map((category: { categoryName: string }) => category.categoryName));
                     setIsLoading(false);
+                    isFetchingRef.current = false;
                 })
                 .catch((error) => {
                     console.error("Failed to fetch data:", error);
-                    setAllRestaurants(restaurantsData); // Fallback to local data
+                    setAllRestaurants(restaurantsData);
                     setIsLoading(false);
+                    isFetchingRef.current = false;
                 });
         } else {
             setAllRestaurants(restaurantsData);
             const uniqueCategories = [...new Set(restaurantsData.map(r => r.category))].filter(Boolean);
             setCategories(uniqueCategories);
         }
+
+        return () => {
+            isFetchingRef.current = false;
+        };
     }, []);
 
     const filteredRestaurants = useMemo(() =>
@@ -158,4 +168,3 @@ const AppPage: React.FC = () => {
 };
 
 export default AppPage;
-
