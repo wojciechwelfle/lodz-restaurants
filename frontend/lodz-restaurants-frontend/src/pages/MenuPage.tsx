@@ -76,10 +76,8 @@ const MenuPage = ({token}: {token: string | null    }) => {
         );
     }
 
-    // Check if there are any VIP dishes
     const hasVipDishes = menu.dishes.some(dish => dish.vip);
 
-    // Filter dishes based on showOnlyVip state
     const displayedDishes = showOnlyVip 
         ? menu.dishes.filter(dish => dish.vip) 
         : menu.dishes;

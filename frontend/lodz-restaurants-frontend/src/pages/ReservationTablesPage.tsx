@@ -14,7 +14,7 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
     const [reservationTables, setReservationTables] = useState<IReservationTable[]>([]);
     const [showAvailableOnly, setShowAvailableOnly] = useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false); // New state for confirmation dialog
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
     const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
     const [selectedTableNumber, setSelectedTableNumber] = useState<string | null>(null);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -36,18 +36,18 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
     const loadReservationTables = () => {
         getAllReservationTables(Number(id)).then(
             (tables: IReservationTable[]) => {
-                const today = new Date().toISOString().split('T')[0]; // Pobierz dzisiejszą datę w formacie YYYY-MM-DD
-                const filteredTables = tables.filter(table => table.date === today); // Filtruj stoliki na dzisiejszy dzień
+                const today = new Date().toISOString().split('T')[0];
+                const filteredTables = tables.filter(table => table.date === today);
 
                 const sortedTables = filteredTables.sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
 
                     if (dateA.getTime() === dateB.getTime()) {
-                        return a.hour - b.hour; // Sortuj po godzinie, jeśli daty są równe
+                        return a.hour - b.hour;
                     }
 
-                    return dateA.getTime() - dateB.getTime(); // Sortuj po dacie
+                    return dateA.getTime() - dateB.getTime();
                 });
 
                 setReservationTables(sortedTables);
@@ -72,7 +72,6 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
             return;
         }
 
-        // Open confirmation dialog instead of immediately reserving
         setSelectedTableId(tableId);
         setSelectedTableNumber(tableNumber as unknown as string);
         setIsConfirmDialogOpen(true);
@@ -87,7 +86,7 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
             setSnackbarMessage("Stolik został szybko zarezerwowany pomyślnie!");
             setSnackbarSeverity("success");
             setSnackbarOpen(true);
-            loadReservationTables(); // Refresh the table data
+            loadReservationTables();
         } catch (error) {
             console.error("Error making quick reservation:", error);
             setSnackbarMessage("Wystąpił błąd podczas szybkiej rezerwacji stolika.");
@@ -118,7 +117,6 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
             [name]: value
         }));
 
-        // Clear error for this field when user types
         if (formErrors[name]) {
             setFormErrors(prev => ({
                 ...prev,
@@ -170,7 +168,7 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
             setSnackbarMessage("Stolik został zarezerwowany pomyślnie!");
             setSnackbarSeverity("success");
             setSnackbarOpen(true);
-            loadReservationTables(); // Refresh the table data
+            loadReservationTables();
         } catch (error) {
             console.error("Error making reservation:", error);
             setSnackbarMessage("Wystąpił błąd podczas rezerwacji stolika.");
@@ -266,7 +264,6 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
                 </TableBody>
             </Table>
 
-            {/* Reservation Dialog */}
             <Dialog open={isDialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
                 <DialogTitle>
                     Rezerwacja stolika {selectedTableNumber}
@@ -328,7 +325,6 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
                 </DialogActions>
             </Dialog>
 
-            {/* Quick Reservation Confirmation Dialog */}
             <Dialog open={isConfirmDialogOpen} onClose={closeConfirmDialog}>
                 <DialogTitle>
                     Potwierdzenie szybkiej rezerwacji

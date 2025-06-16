@@ -44,7 +44,6 @@ const Register: React.FC<RegisterProps> = ({ title }) => {
 
     try {
       await register(formData);
-      // Registration successful, redirect to login page
       navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An unexpected error occurred');

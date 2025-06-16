@@ -130,7 +130,6 @@ public class DataInitializer {
     }
 
     public void addWhiskeyInTheJarRestaurant() {
-        // Find or create the category first
         RestaurantCategory steakhouseCategory = restaurantCategoryRepository
                 .findByCategoryName("Steakhouse")
                 .orElseGet(() -> restaurantCategoryRepository.save(new RestaurantCategory("Steakhouse")));

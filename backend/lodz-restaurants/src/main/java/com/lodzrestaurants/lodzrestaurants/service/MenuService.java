@@ -85,7 +85,7 @@ public class MenuService {
     private List<DishDto> getDishListAndMapToDto(Long menuId, boolean loggedIn) {
         return dishRepository.findAllByMenuId(menuId)
                 .stream()
-                .filter(dish -> loggedIn || !dish.isVip()) // Filter VIP dishes if not logged in
+                .filter(dish -> loggedIn || !dish.isVip())
                 .map(dish -> new DishDto(
                         dish.getDishId(),
                         dish.getName(),

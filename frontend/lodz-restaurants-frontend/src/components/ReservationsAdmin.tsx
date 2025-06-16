@@ -9,7 +9,7 @@ const ReservationsAdmin = ({token}: { token: string }) => {
     const [numberOfTables, setNumberOfTables] = useState(5);
     const [seats, setSeats] = useState(4);
     const [date, setDate] = useState("");
-    const [days, setDays] = useState(0); // Nowa zmienna dla liczby dni
+    const [days, setDays] = useState(0);
     const [fromHour, setFromHour] = useState(8);
     const [toHour, setToHour] = useState(10);
 
