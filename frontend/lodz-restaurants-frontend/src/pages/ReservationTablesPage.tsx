@@ -36,15 +36,18 @@ const ReservationTablesPage = ({token}: { token: string | null }) => {
     const loadReservationTables = () => {
         getAllReservationTables(Number(id)).then(
             (tables: IReservationTable[]) => {
-                const sortedTables = tables.sort((a, b) => {
+                const today = new Date().toISOString().split('T')[0]; // Pobierz dzisiejszą datę w formacie YYYY-MM-DD
+                const filteredTables = tables.filter(table => table.date === today); // Filtruj stoliki na dzisiejszy dzień
+
+                const sortedTables = filteredTables.sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
 
                     if (dateA.getTime() === dateB.getTime()) {
-                        return a.hour - b.hour; // Sort by hour if dates are equal
+                        return a.hour - b.hour; // Sortuj po godzinie, jeśli daty są równe
                     }
 
-                    return dateA.getTime() - dateB.getTime(); // Sort by date
+                    return dateA.getTime() - dateB.getTime(); // Sortuj po dacie
                 });
 
                 setReservationTables(sortedTables);

@@ -41,9 +41,10 @@ public class ReservationTableService {
         this.jwtService = jwtService;
     }
 
-    public List<ReservationTableDto> getAllReservationTables(Long restaurantId) {
+    public List<ReservationTableDto> getAllReservationTables(Long restaurantId, String date) {
         return reservationTableRepository.findAllByRestaurantId(restaurantId)
                 .stream()
+                .filter(table -> date == null || table.getDate().equals(date))
                 .map(mapReservationTableToDto())
                 .toList();
     }

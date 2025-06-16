@@ -26,9 +26,13 @@ public class ReservationTablesApi {
 
     @Schema(description = "Get all reservation tables for restaurant")
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<List<ReservationTableDto>> getAllReservationTables(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok(reservationTableService.getAllReservationTables(restaurantId));
+    public ResponseEntity<List<ReservationTableDto>> getAllReservationTables(
+            @PathVariable Long restaurantId,
+            @RequestParam(required = false) String date
+    ) {
+        return ResponseEntity.ok(reservationTableService.getAllReservationTables(restaurantId, date));
     }
+
 
     @Schema(description = "Create a new reservation table for a restaurant")
     @PostMapping
