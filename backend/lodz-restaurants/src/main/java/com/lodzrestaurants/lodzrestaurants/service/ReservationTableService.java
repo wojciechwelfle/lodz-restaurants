@@ -2,12 +2,16 @@ package com.lodzrestaurants.lodzrestaurants.service;
 
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.ReservationTable;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesRequest;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.User;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.GenerateTablesDto;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationRequestDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.ReservationTableDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.ReservationTableRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.UserRepository;
 import com.lodzrestaurants.lodzrestaurants.exceptions.BadRequest;
+import com.lodzrestaurants.lodzrestaurants.exceptions.NotFoundException;
+import com.lodzrestaurants.lodzrestaurants.configuration.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,46 +27,53 @@ public class ReservationTableService {
 
     private final ReservationTableRepository reservationTableRepository;
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     @Autowired
     public ReservationTableService(ReservationTableRepository reservationTableRepository,
-                                   RestaurantRepository restaurantRepository) {
+                                   RestaurantRepository restaurantRepository,
+                                   UserRepository userRepository,
+                                   JwtService jwtService) {
         this.reservationTableRepository = reservationTableRepository;
         this.restaurantRepository = restaurantRepository;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
-    public List<ReservationTableDto> getAllReservationTables(Long restaurantId) {
+    public List<ReservationTableDto> getAllReservationTables(Long restaurantId, String date) {
         return reservationTableRepository.findAllByRestaurantId(restaurantId)
                 .stream()
+                .filter(table -> date == null || table.getDate().equals(date))
                 .map(mapReservationTableToDto())
                 .toList();
     }
 
     @Transactional
-    public String bookTable(ReservationRequest reservationRequest) {
-        if (reservationRequest.reservationTableId() == null || reservationRequest.reservationTableId() <= 0) {
+    public String bookTable(ReservationRequestDto reservationRequestDto) {
+        if (reservationRequestDto.reservationTableId() == null || reservationRequestDto.reservationTableId() <= 0) {
             throw new BadRequest("Invalid reservation table ID.");
         }
-        ReservationTable reservationTable = reservationTableRepository.findById(reservationRequest.reservationTableId())
-                .orElseThrow(() -> new BadRequest("Reservation table not found with ID: " + reservationRequest.reservationTableId()));
+        ReservationTable reservationTable = reservationTableRepository.findById(reservationRequestDto.reservationTableId())
+                .orElseThrow(() -> new BadRequest("Reservation table not found with ID: " + reservationRequestDto.reservationTableId()));
 
         if (!reservationTable.isAvailable()) {
             throw new BadRequest("Reservation table is not available for booking.");
         }
 
-        reservationTable.setFirstName(reservationRequest.firstName());
-        reservationTable.setLastName(reservationRequest.lastName());
-        reservationTable.setPhoneNumber(reservationRequest.phoneNumber());
-        reservationTable.setEmail(reservationRequest.email());
+        reservationTable.setFirstName(reservationRequestDto.firstName());
+        reservationTable.setLastName(reservationRequestDto.lastName());
+        reservationTable.setPhoneNumber(reservationRequestDto.phoneNumber());
+        reservationTable.setEmail(reservationRequestDto.email());
         reservationTable.setAvailable(false);
 
         reservationTableRepository.save(reservationTable);
-        log.info("Reservation created for table ID: {}", reservationRequest.reservationTableId());
-        return "Reservation created successfully for table ID: " + reservationRequest.reservationTableId();
+        log.info("Reservation created for table ID: {}", reservationRequestDto.reservationTableId());
+        return "Reservation created successfully for table ID: " + reservationRequestDto.reservationTableId();
     }
 
     @Transactional
-    public String generateTables(GenerateTablesRequest request) {
+    public String generateTables(GenerateTablesDto request) {
         if (request.numberOfTables() <= 0 || request.seats() <= 0) {
             throw new BadRequest("Number of tables and seats must be greater than zero.");
         }
@@ -86,14 +97,14 @@ public class ReservationTableService {
         return "Reservation tables generated successfully for restaurant ID: " + request.restaurantId();
     }
 
-    private void generateTablesForEachHour(GenerateTablesRequest request, Restaurant restaurant, List<ReservationTable> tables, long tableNumber) {
+    private void generateTablesForEachHour(GenerateTablesDto request, Restaurant restaurant, List<ReservationTable> tables, long tableNumber) {
         for (long hour = request.fromHour(); hour < request.toHour(); hour++) {
             ReservationTable table = bookTable(request, restaurant, hour, tableNumber++);
             tables.add(table);
         }
     }
 
-    private static ReservationTable bookTable(GenerateTablesRequest request, Restaurant restaurant, long hour, long tableNumber) {
+    private static ReservationTable bookTable(GenerateTablesDto request, Restaurant restaurant, long hour, long tableNumber) {
         ReservationTable table = new ReservationTable();
         table.setRestaurant(restaurant);
         table.setSeats(request.seats());
@@ -113,5 +124,39 @@ public class ReservationTableService {
                 reservationTable.getHour(),
                 reservationTable.isAvailable()
         );
+    }
+
+    @Transactional
+    public String quickReservation(Long reservationTableId, String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new BadRequest("Invalid or missing authentication token");
+        }
+
+        String jwt = token.substring(7);
+        String username;
+
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            log.error("Failed to extract username from token", e);
+            throw new BadRequest("Invalid authentication token");
+        }
+
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        ReservationTable reservationTable = reservationTableRepository.findById(reservationTableId)
+                .orElseThrow(() -> new NotFoundException("Reservation table not found with ID: " + reservationTableId));
+        if (!reservationTable.isAvailable()) {
+            throw new BadRequest("Reservation table is not available for quick reservation.");
+        }
+        reservationTable.setFirstName(user.getFirstName());
+        reservationTable.setLastName(user.getLastName());
+        reservationTable.setPhoneNumber(user.getPhoneNumber());
+        reservationTable.setEmail(user.getEmail());
+        reservationTable.setAvailable(false);
+        reservationTableRepository.save(reservationTable);
+        log.info("Quick reservation created for table ID: {}", reservationTableId);
+        return "Quick reservation created successfully for table ID: " + reservationTableId;
     }
 }

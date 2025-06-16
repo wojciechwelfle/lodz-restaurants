@@ -9,6 +9,7 @@ const ReservationsAdmin = ({token}: { token: string }) => {
     const [numberOfTables, setNumberOfTables] = useState(5);
     const [seats, setSeats] = useState(4);
     const [date, setDate] = useState("");
+    const [days, setDays] = useState(0);
     const [fromHour, setFromHour] = useState(8);
     const [toHour, setToHour] = useState(10);
 
@@ -28,8 +29,8 @@ const ReservationsAdmin = ({token}: { token: string }) => {
     }, [token]);
 
     const handleGenerateTables = async () => {
-        if (!date) {
-            alert("Please select a valid date.");
+        if (!date && days <= 0) {
+            alert("Please select a valid date or specify the number of days.");
             return;
         }
         if (fromHour < 0 || fromHour > 24 || toHour < 0 || toHour > 24) {
@@ -41,16 +42,34 @@ const ReservationsAdmin = ({token}: { token: string }) => {
             return;
         }
         try {
-            await generateReservationTables(
-                restaurantId,
-                numberOfTables,
-                seats,
-                date,
-                fromHour,
-                toHour,
-                token
-            );
-            alert("Reservation tables generated successfully!");
+            if (days > 0) {
+                const currentDate = new Date(date || new Date());
+                for (let i = 0; i < days; i++) {
+                    const targetDate = new Date(currentDate);
+                    targetDate.setDate(currentDate.getDate() + i);
+                    await generateReservationTables(
+                        restaurantId,
+                        numberOfTables,
+                        seats,
+                        targetDate.toISOString().split('T')[0],
+                        fromHour,
+                        toHour,
+                        token
+                    );
+                }
+                alert(`Reservation tables generated successfully for ${days} days!`);
+            } else {
+                await generateReservationTables(
+                    restaurantId,
+                    numberOfTables,
+                    seats,
+                    date,
+                    fromHour,
+                    toHour,
+                    token
+                );
+                alert("Reservation tables generated successfully!");
+            }
         } catch {
             alert("Error generating reservation tables");
         }
@@ -108,6 +127,15 @@ const ReservationsAdmin = ({token}: { token: string }) => {
                 </Box>
                 <Box sx={{flex: "1 1 calc(50% - 16px)"}}>
                     <TextField
+                        label="Number of Days"
+                        type="number"
+                        value={days}
+                        onChange={(e) => setDays(Math.max(0, Number(e.target.value)))}
+                        fullWidth
+                    />
+                </Box>
+                <Box sx={{flex: "1 1 calc(50% - 16px)"}}>
+                    <TextField
                         label="From Hour"
                         type="number"
                         value={fromHour}
@@ -138,3 +166,4 @@ const ReservationsAdmin = ({token}: { token: string }) => {
 };
 
 export default ReservationsAdmin;
+

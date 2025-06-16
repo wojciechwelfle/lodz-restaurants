@@ -6,6 +6,7 @@ public record RestaurantDto(
         String description,
         double[] position,
         String category,
-        Long menuId
+        Long menuId,
+        double rating
 ) {
 }

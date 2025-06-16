@@ -6,11 +6,13 @@ import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.Restaurant;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dao.RestaurantCategory;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantCategoryDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantDto;
-import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantRequest;
+import com.lodzrestaurants.lodzrestaurants.dataaccess.dto.RestaurantRequestDto;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantCategoryRepository;
 import com.lodzrestaurants.lodzrestaurants.dataaccess.repository.RestaurantRepository;
 import com.lodzrestaurants.lodzrestaurants.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +43,17 @@ public class RestaurantService {
                 .toList();
     }
 
+    public Page<RestaurantDto> getPaginatedRestaurants(Pageable pageable) {
+        return restaurantRepository.findAll(pageable)
+                .map(mapRestaurantToDto());
+    }
+
+    public Page<RestaurantDto> searchRestaurants(String searchTerm, Pageable pageable) {
+        return restaurantRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        searchTerm, searchTerm, pageable)
+                .map(mapRestaurantToDto());
+    }
+
     public List<RestaurantCategoryDto> getCategories() {
         return restaurantCategoryRepository.findAll()
                 .stream()
@@ -51,33 +64,33 @@ public class RestaurantService {
                 .toList();
     }
 
-    public RestaurantDto createRestaurant(RestaurantRequest restaurantRequest) {
-        RestaurantCategory category = restaurantCategoryRepository.findByCategoryName(restaurantRequest.category())
-                .orElseThrow(() -> new NotFoundException("Category " + restaurantRequest.category() + " does not exist."));
+    public RestaurantDto createRestaurant(RestaurantRequestDto restaurantRequestDto) {
+        RestaurantCategory category = restaurantCategoryRepository.findByCategoryName(restaurantRequestDto.category())
+                .orElseThrow(() -> new NotFoundException("Category " + restaurantRequestDto.category() + " does not exist."));
 
-        Localization localization = new Localization(restaurantRequest.position()[0], restaurantRequest.position()[1]);
+        Localization localization = new Localization(restaurantRequestDto.position()[0], restaurantRequestDto.position()[1]);
         Restaurant restaurant = new Restaurant(
-                restaurantRequest.name(),
-                restaurantRequest.description(),
+                restaurantRequestDto.name(),
+                restaurantRequestDto.description(),
                 localization,
                 category,
-                new Menu("Menu for " + restaurantRequest.name() + " Restaurant", "")
+                new Menu("Menu for " + restaurantRequestDto.name() + " Restaurant", "")
         );
 
         return mapRestaurantToDto().apply(restaurantRepository.save(restaurant));
     }
 
-    public RestaurantDto updateRestaurant(Long restaurantId, RestaurantRequest restaurantRequest) {
+    public RestaurantDto updateRestaurant(Long restaurantId, RestaurantRequestDto restaurantRequestDto) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException("Restaurant with ID " + restaurantId + " does not exist."));
 
-        RestaurantCategory category = restaurantCategoryRepository.findByCategoryName(restaurantRequest.category())
-                .orElseThrow(() -> new NotFoundException("Category " + restaurantRequest.category() + " does not exist."));
+        RestaurantCategory category = restaurantCategoryRepository.findByCategoryName(restaurantRequestDto.category())
+                .orElseThrow(() -> new NotFoundException("Category " + restaurantRequestDto.category() + " does not exist."));
 
-        Localization localization = new Localization(restaurantRequest.position()[0], restaurantRequest.position()[1]);
+        Localization localization = new Localization(restaurantRequestDto.position()[0], restaurantRequestDto.position()[1]);
 
-        restaurant.setName(restaurantRequest.name());
-        restaurant.setDescription(restaurantRequest.description());
+        restaurant.setName(restaurantRequestDto.name());
+        restaurant.setDescription(restaurantRequestDto.description());
         restaurant.setLocalization(localization);
         restaurant.setRestaurantCategory(category);
 
@@ -98,7 +111,8 @@ public class RestaurantService {
                 restaurant.getDescription(),
                 new double[]{restaurant.getLocalization().getLatitude(), restaurant.getLocalization().getLongitude()},
                 restaurant.getRestaurantCategory().getCategoryName(),
-                restaurant.getMenu() != null ? restaurant.getMenu().getMenuId() : null
+                restaurant.getMenu() != null ? restaurant.getMenu().getMenuId() : null,
+                restaurant.getRanking() != null ? restaurant.getRanking().getRankingValue() : 0.0
         );
     }
 

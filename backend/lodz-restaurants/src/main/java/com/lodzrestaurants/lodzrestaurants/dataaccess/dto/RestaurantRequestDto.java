@@ -1,6 +1,6 @@
 package com.lodzrestaurants.lodzrestaurants.dataaccess.dto;
 
-public record RestaurantRequest(
+public record RestaurantRequestDto(
         String name,
         String description,
         double[] position,

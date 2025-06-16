@@ -2,9 +2,18 @@ import {API_URL} from "../constants.ts";
 import type IReservationTable from "../types/IReservationTable.ts";
 import type IReservationRequest from "../types/IReservationRequest.ts";
 import type IRestaurantRequest from "../types/IRestaurantRequest.ts";
+import type IPaginatedResponse from "../types/IPaginatedResponse.ts";
+import type IDish from "../types/IDish.ts";
 
 export async function getRestaurants() {
     const res = await fetch(`${API_URL}/v1/restaurants`);
+    if (!res.ok) throw new Error("Błąd podczas pobierania restauracji");
+    return res.json();
+}
+
+export async function getPaginatedRestaurants(page: number, size: number, search?: string): Promise<IPaginatedResponse> {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+    const res = await fetch(`${API_URL}/v1/restaurants/paginated?page=${page}&size=${size}${searchParam}`);
     if (!res.ok) throw new Error("Błąd podczas pobierania restauracji");
     return res.json();
 }
@@ -21,6 +30,7 @@ export async function getAllCategories() {
     return res.json();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateRestaurant(restaurant: any, token: string) {
     const res = await fetch(`${API_URL}/v1/restaurants/${restaurant.id}`, {
         method: "PUT",
@@ -92,6 +102,25 @@ export async function login(username: string, password: string): Promise<string>
     return data.token;
 }
 
+export async function register(userData: { 
+    username: string; 
+    password: string; 
+    firstName: string; 
+    lastName: string; 
+    phoneNumber: string; 
+    email: string; 
+}): Promise<void> {
+    const res = await fetch(`${API_URL}/v1/authorization/register`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(userData),
+    });
+    if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Registration failed");
+    }
+}
+
 export async function getAllReservationTables(restaurantId: number): Promise<IReservationTable[]> {
     const res = await fetch(`${API_URL}/v1/reservation-tables/${restaurantId}`);
     if (!res.ok) throw new Error("Błąd pobierania stolików rezerwacji");
@@ -136,3 +165,29 @@ export async function generateReservationTables(
     if (!res.ok) throw new Error("Błąd generowania stolików rezerwacji");
 }
 
+export async function makeQuickReservation(reservationTableId: number, token: string): Promise<void> {
+    const res = await fetch(`${API_URL}/v1/reservation-tables/quick/${reservationTableId}`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    if (!res.ok) throw new Error("Błąd podczas szybkiej rezerwacji stolika");
+}
+
+export async function addDish(
+    menuId: number,
+    dish: { dishName?: string; dishDescription?: string; dishPrice?: number; vip: boolean },
+    token: string
+): Promise<IDish> {
+    const res = await fetch(`${API_URL}/v1/dishes/${menuId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(dish),
+    });
+    if (!res.ok) throw new Error("Błąd dodawania dania");
+    return res.json();
+}

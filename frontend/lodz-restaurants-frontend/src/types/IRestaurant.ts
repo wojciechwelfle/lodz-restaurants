@@ -5,4 +5,5 @@ export default interface IRestaurant {
     position: [number, number]; // [latitude, longitude]
     category: string,
     menuId: number | null,
+    rating: number | null
 }

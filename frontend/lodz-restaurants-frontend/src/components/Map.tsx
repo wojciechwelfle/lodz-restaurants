@@ -16,9 +16,20 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
+const redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
 interface MapProps {
     restaurants: IRestaurant[];
     selected?: IRestaurant | null;
+    onMarkerClick: (restaurant: IRestaurant) => void;
+    onMarkerHighlight: (restaurantId: number) => void;
 }
 
 const FlyTo = ({ position }: { position: [number, number] }) => {
@@ -26,8 +37,8 @@ const FlyTo = ({ position }: { position: [number, number] }) => {
 
     useEffect(() => {
         if (position) {
-            map.flyTo(position, 15, {
-                duration: 1,
+            map.flyTo(position, 16, {
+                duration: 0.5,
                 easeLinearity: 0.25,
             });
         }
@@ -36,13 +47,14 @@ const FlyTo = ({ position }: { position: [number, number] }) => {
     return null;
 };
 
-const Map: React.FC<MapProps> = ({ restaurants, selected }) => {
+const Map: React.FC<MapProps> = ({ restaurants, selected, onMarkerClick, onMarkerHighlight }) => {
     const defaultCenter: [number, number] = [51.77720949875417, 19.45797264481472];
-
+    const [lastSelected, setLastSelected] = useState<IRestaurant | null>(null);
     const [mapKey, setMapKey] = useState(0);
 
     useEffect(() => {
         if (selected) {
+            setLastSelected(selected);
             setMapKey((prevKey) => prevKey + 1);
         }
     }, [selected]);
@@ -52,7 +64,7 @@ const Map: React.FC<MapProps> = ({ restaurants, selected }) => {
             key={mapKey}
             center={selected ? selected.position : defaultCenter}
             zoom={13}
-            className="h-full w-full"
+            className="h-screen w-full"
             scrollWheelZoom={false}
         >
             <TileLayer
@@ -61,7 +73,19 @@ const Map: React.FC<MapProps> = ({ restaurants, selected }) => {
             />
 
             {restaurants.map((r) => (
-                <Marker key={r.id} position={r.position}>
+                <Marker
+                    key={r.id}
+                    position={r.position}
+                    icon={(selected && r.id === selected.id) || 
+                          (!selected && lastSelected && r.id === lastSelected.id) 
+                          ? redIcon : new L.Icon.Default()}
+                    eventHandlers={{
+                        click: () => {
+                            onMarkerClick(r);
+                            onMarkerHighlight(r.id);
+                        },
+                    }}
+                >
                     <Popup>{r.name}</Popup>
                 </Marker>
             ))}
